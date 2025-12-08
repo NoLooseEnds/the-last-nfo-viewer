@@ -1,0 +1,33 @@
+/* Localizable.strings */
+
+/* Message Dialog */
+
+/* Menu */
+"MENU_SETTINGS" = "Réglages…";
+"MENU_PREFERENCES" = "Préférences…";
+"MENU_VIEW" = "Présentation";
+"MENU_TOGGLE_DARK_MODE" = "Basculer le mode sombre";
+
+/* Window Titles */
+"WINDOW_PREFERENCES" = "Préférences";
+
+/* Preferences UI */
+"PREF_LABEL_FONT" = "Police :";
+"PREF_LABEL_APPEARANCE" = "Apparence :";
+"PREF_LABEL_ALIGNMENT" = "Alignement :";
+"PREF_LABEL_FONT_SIZE" = "Taille :";
+"PREF_CHECK_SMOOTHING" = "Lissage de police";
+"PREF_LABEL_TEXT_COLOR" = "Couleur du texte :";
+"PREF_LABEL_BG_COLOR" = "Couleur de fond :";
+"PREF_LABEL_LINK_COLOR" = "Couleur des liens :";
+"PREF_LABEL_SEL_COLOR" = "Couleur de sélection :";
+"PREF_CHECK_LINKS" = "Activer les liens";
+
+/* Dropdown Options */
+"APPEARANCE_SYSTEM" = "Système";
+"APPEARANCE_LIGHT" = "Clair";
+"APPEARANCE_DARK" = "Sombre";
+"ALIGN_LEFT" = "Gauche";
+"ALIGN_CENTER" = "Centré";
+"ALIGN_RIGHT" = "Droite";
+"MENU_SYSTEM_FONTS" = "Polices système (chasse fixe)";
