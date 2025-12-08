@@ -1,0 +1,5 @@
+/* Localized versions of Info.plist keys */
+
+CFBundleName = "The Last NFO Viewer";
+CFBundleGetInfoString = "Copyleft NoLooseEnds. Released under GPL-3.";
+NSHumanReadableCopyright = "Copyleft NoLooseEnds. Released under GPL-3.";

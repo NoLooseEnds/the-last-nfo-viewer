@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>ATSApplicationFontsPath</key>
+	<string>Fonts</string>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleDisplayName</key>
+	<string>The Last NFO Viewer</string>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>nfo</string>
+				<string>asc</string>
+				<string>diz</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>DocumentIcon</string>
+			<key>CFBundleTypeName</key>
+			<string>Scene Release Document</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>com.nle.nfo</string>
+			</array>
+			<key>NSDocumentClass</key>
+			<string>Document</string>
+		</dict>
+	</array>
+	<key>CFBundleExecutable</key>
+	<string>${EXECUTABLE_NAME}</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>The Last NFO Viewer</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0.0</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.utilities</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>${MACOSX_DEPLOYMENT_TARGET}</string>
+	<key>NSHumanReadableCopyright</key>
+	<string>Code is copyleft by NoLooseEnds. Released under GPL-3.</string>
+	<key>NSMainNibFile</key>
+	<string>MainMenu</string>
+	<key>NSPrincipalClass</key>
+	<string>NSApplication</string>
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.plain-text</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Scene Release Document</string>
+			<key>UTTypeIdentifier</key>
+			<string>com.nle.nfo</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>nfo</string>
+					<string>asc</string>
+					<string>diz</string>
+				</array>
+			</dict>
+		</dict>
+	</array>
+</dict>
+</plist>

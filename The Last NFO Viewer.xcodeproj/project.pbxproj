@@ -1,0 +1,664 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		DEADBEEF000000AB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DEADBEEF000000AC /* Assets.xcassets */; };
+		DEADBEEF0000000C /* PreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEADBEEF00000002 /* PreviewViewController.swift */; };
+		DEADBEEF0000000D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		DEADBEEF0000000E /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DEADBEEF00000010 /* Quartz.framework */; };
+		DEADBEEF0000000F /* More Perfect DOS VGA.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D750355F249E68AE0004739B /* More Perfect DOS VGA.ttf */; };
+		DEADBEEF000000F1 /* FiraCodeNerdFontMono-Retina.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DEADBEEF000000F0 /* FiraCodeNerdFontMono-Retina.ttf */; };
+		DEADBEEF000000F3 /* JetBrainsMono-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DEADBEEF000000F2 /* JetBrainsMono-Regular.ttf */; };
+		DEADBEEF00000011 /* NFO Preview.appex in Embed QuickLook Plugin */ = {isa = PBXBuildFile; fileRef = DEADBEEF00000003 /* NFO Preview.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		74AE4DE09382D285BFE11C4F /* Px437_IBM_PS2thin1.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = A3E00DE466994BFEB753DBA7 /* Px437_IBM_PS2thin1.ttf */; };
+		351DF4F4AC1DB03F26B5A7E2 /* Px437_IBM_PS2thin3.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = ADE032F485E89BFFF6AC59D7 /* Px437_IBM_PS2thin3.ttf */; };
+		13395C225A17551CC37CA813 /* Px437_IBM_PS2thin2.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = FF342C3A17F4FB365BDC28DE /* Px437_IBM_PS2thin2.ttf */; };
+		3DF5690F62058AAF52976614 /* Px437_Wyse700b-2y.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6112B02FEEC907978F35CBBC /* Px437_Wyse700b-2y.ttf */; };
+		C2C3370563757271B27E280B /* Px437_IBM_VGA9.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 99429A23CD7FABEF9B907F59 /* Px437_IBM_VGA9.ttf */; };
+		6DBC0DBAFB742131B1FFFF0C /* Px437_IBM_VGA8.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8D483D58CA94EDB58C2BD7FB /* Px437_IBM_VGA8.ttf */; };
+		989A1AA145BA382B85880F3D /* Px437_IBM_PS2thin4.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8C0B81F8AC4CAA5C49286AD8 /* Px437_IBM_PS2thin4.ttf */; };
+		CB97E27EDE93951BF714F0A7 /* Px437_IBM_CGAthin-2y.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5F3C7497302AEAEF19C74820 /* Px437_IBM_CGAthin-2y.ttf */; };
+		E38E258B54693668AF757D92 /* Px437_VGA_SquarePx.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = B55D4255E593A86F3862D5C1 /* Px437_VGA_SquarePx.ttf */; };
+		47718C3694CEDEB8B06074FC /* Px437_IBM_MDA.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 0D92978F3341FB335ADD8518 /* Px437_IBM_MDA.ttf */; };
+		1EF30F9A80FD9EC11C222143 /* ProFontWindows.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 101796B2677AD590078A8FD7 /* ProFontWindows.ttf */; };
+		B94D40FEB5250DD6ACE377F3 /* Px437_IBM_Conv-2y.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3F95745B8BB72CC398BC7C77 /* Px437_IBM_Conv-2y.ttf */; };
+		83027A032B573DD3FDDF4D9B /* Px437_Verite_8x16.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 21AB19BA26F3CD644B569810 /* Px437_Verite_8x16.ttf */; };
+		496A62ED55EA70648764CC9D /* PxPlus_IBM_CGAthin-2y.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 17994EC4C4BA16272CFEA387 /* PxPlus_IBM_CGAthin-2y.ttf */; };
+		F7F20BCDA174B6F90012C37C /* Px437_AmstradPC1512-2y.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44798746CD3B3463DBC4AB1E /* Px437_AmstradPC1512-2y.ttf */; };
+		3643074CBD6679C807013E9E /* Px437_IBM_BIOS-2y.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 968CCAEEFD4419A66DF66775 /* Px437_IBM_BIOS-2y.ttf */; };
+		88315ED61FF580F127ADAE17 /* Px437_Wyse700a-2y.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4D4196D63632BBC59CE6A9E1 /* Px437_Wyse700a-2y.ttf */; };
+		3B7329E90196DFA36BAC15EA /* Px437_IBM_ISO8.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 909273A5197C29BCE2EEA7A2 /* Px437_IBM_ISO8.ttf */; };
+		D62CDA206C11EF594EA8AE85 /* Px437_ATI_8x8-2y.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 07C255407141108CAE435BE6 /* Px437_ATI_8x8-2y.ttf */; };
+		481E9205BAB0C970A74992A9 /* Px437_ATI_8x14.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = CC25BDA1072EABB892AB12CC /* Px437_ATI_8x14.ttf */; };
+		31D82BBAE4806B7A1CBBDD86 /* Px437_Verite_8x8-2y.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 15C9D37DEA21E4F070D6E343 /* Px437_Verite_8x8-2y.ttf */; };
+		67DD08805DE64D4DF029CFEA /* Px437_ATI_8x16.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = F4C8FAAF57129447C18DB4B4 /* Px437_ATI_8x16.ttf */; };
+		C35EC625E508AC9346FC8BFC /* BlockZone.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 582D56DD2EEE76566B46A63A /* BlockZone.ttf */; };
+		3A771FB1C33F544CB8B98E52 /* Px437_CompaqThin_8x16.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 167E0C061C1098A8962A851C /* Px437_CompaqThin_8x16.ttf */; };
+		DAB5512E84D6FCFF4D308DF4 /* Px437_TandyOld_TV-2y.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = D1E8AB3680DF5C0B79A61BDB /* Px437_TandyOld_TV-2y.ttf */; };
+		31568C76BB261B240D485E3A /* Px437_TandyNew_TV-2y.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6A5C07E0F035BE15276FD453 /* Px437_TandyNew_TV-2y.ttf */; };
+		256AC3DA0F4B6AC300CF3369 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 256AC3D90F4B6AC300CF3369 /* AppDelegate.swift */; };
+		C001CAFE0000000000000006 /* ThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C001CAFE0000000000000005 /* ThemeManager.swift */; };
+		C001CAFE0000000000000003 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = C001CAFE0000000000000001 /* Constants.swift */; };
+		C001CAFE0000000000000004 /* ThemeAwareScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C001CAFE0000000000000002 /* ThemeAwareScrollView.swift */; };
+		BD2059377C034511826341F0 /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C25A04A84D45EC9124075A /* Document.swift */; };
+		3377FBF7CCA0418AAACE77EC /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF12DB8ACE14464FAB57F6FF /* ViewController.swift */; };
+		D4E5F60718293A4B5CA1B2C3 /* PreferencesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B5C /* PreferencesViewController.swift */; };
+		1DDD58160DA1D0A300B32029 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1DDD58140DA1D0A300B32029 /* MainMenu.xib */; };
+		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
+		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		D7503560249E68AE0004739B /* More Perfect DOS VGA.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = D750355F249E68AE0004739B /* More Perfect DOS VGA.ttf */; };
+		DEADBEEF000000F1 /* FiraCodeNerdFontMono-Retina.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = DEADBEEF000000F0 /* FiraCodeNerdFontMono-Retina.ttf */; };
+		DEADBEEF000000F3 /* JetBrainsMono-Regular.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = DEADBEEF000000F2 /* JetBrainsMono-Regular.ttf */; };
+		D7B19C5213ED514D003B4106 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = D7B19C5113ED514D003B4106 /* Credits.rtf */; };
+		D7F0DCC813EFE0B40056E5B4 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = D7F0DCC613EFE0B40056E5B4 /* Localizable.strings */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		DEADBEEF00000020 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DEADBEEF0000000B;
+			remoteInfo = "NFO Preview";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXTargetDependency section */
+		DEADBEEF00000021 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DEADBEEF0000000B /* NFO Preview */;
+			targetProxy = DEADBEEF00000020 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		DEADBEEF00000012 /* Embed QuickLook Plugin */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				DEADBEEF00000011 /* NFO Preview.appex in Embed QuickLook Plugin */,
+			);
+			name = "Embed QuickLook Plugin";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D750355E249E68900004739B /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = Fonts;
+			dstSubfolderSpec = 7;
+			files = (
+				74AE4DE09382D285BFE11C4F /* Px437_IBM_PS2thin1.ttf in CopyFiles */,
+				351DF4F4AC1DB03F26B5A7E2 /* Px437_IBM_PS2thin3.ttf in CopyFiles */,
+				13395C225A17551CC37CA813 /* Px437_IBM_PS2thin2.ttf in CopyFiles */,
+				3DF5690F62058AAF52976614 /* Px437_Wyse700b-2y.ttf in CopyFiles */,
+				C2C3370563757271B27E280B /* Px437_IBM_VGA9.ttf in CopyFiles */,
+				6DBC0DBAFB742131B1FFFF0C /* Px437_IBM_VGA8.ttf in CopyFiles */,
+				989A1AA145BA382B85880F3D /* Px437_IBM_PS2thin4.ttf in CopyFiles */,
+				CB97E27EDE93951BF714F0A7 /* Px437_IBM_CGAthin-2y.ttf in CopyFiles */,
+				E38E258B54693668AF757D92 /* Px437_VGA_SquarePx.ttf in CopyFiles */,
+				47718C3694CEDEB8B06074FC /* Px437_IBM_MDA.ttf in CopyFiles */,
+				1EF30F9A80FD9EC11C222143 /* ProFontWindows.ttf in CopyFiles */,
+				B94D40FEB5250DD6ACE377F3 /* Px437_IBM_Conv-2y.ttf in CopyFiles */,
+				83027A032B573DD3FDDF4D9B /* Px437_Verite_8x16.ttf in CopyFiles */,
+				496A62ED55EA70648764CC9D /* PxPlus_IBM_CGAthin-2y.ttf in CopyFiles */,
+				F7F20BCDA174B6F90012C37C /* Px437_AmstradPC1512-2y.ttf in CopyFiles */,
+				3643074CBD6679C807013E9E /* Px437_IBM_BIOS-2y.ttf in CopyFiles */,
+				88315ED61FF580F127ADAE17 /* Px437_Wyse700a-2y.ttf in CopyFiles */,
+				3B7329E90196DFA36BAC15EA /* Px437_IBM_ISO8.ttf in CopyFiles */,
+				D62CDA206C11EF594EA8AE85 /* Px437_ATI_8x8-2y.ttf in CopyFiles */,
+				481E9205BAB0C970A74992A9 /* Px437_ATI_8x14.ttf in CopyFiles */,
+				31D82BBAE4806B7A1CBBDD86 /* Px437_Verite_8x8-2y.ttf in CopyFiles */,
+				67DD08805DE64D4DF029CFEA /* Px437_ATI_8x16.ttf in CopyFiles */,
+				C35EC625E508AC9346FC8BFC /* BlockZone.ttf in CopyFiles */,
+				3A771FB1C33F544CB8B98E52 /* Px437_CompaqThin_8x16.ttf in CopyFiles */,
+				DAB5512E84D6FCFF4D308DF4 /* Px437_TandyOld_TV-2y.ttf in CopyFiles */,
+				31568C76BB261B240D485E3A /* Px437_TandyNew_TV-2y.ttf in CopyFiles */,
+				D7503560249E68AE0004739B /* More Perfect DOS VGA.ttf in CopyFiles */,
+				DEADBEEF000000F1 /* FiraCodeNerdFontMono-Retina.ttf in CopyFiles */,
+				DEADBEEF000000F3 /* JetBrainsMono-Regular.ttf in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		DEADBEEF000000AC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Resources/Assets.xcassets; sourceTree = "<group>"; };
+		DEADBEEF00000030 /* NFO Preview.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "NFO Preview.entitlements"; sourceTree = "<group>"; };
+		DEADBEEF00000099 /* The Last NFO Viewer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "The Last NFO Viewer.entitlements"; sourceTree = "<group>"; };
+		DEADBEEF00000001 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		DEADBEEF00000002 /* PreviewViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreviewViewController.swift; sourceTree = "<group>"; };
+		DEADBEEF00000003 /* NFO Preview.appex */ = {isa = PBXFileReference; explicitFileType = wrapper.app-extension; includeInIndex = 0; path = "NFO Preview.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		DEADBEEF00000010 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
+		A3E00DE466994BFEB753DBA7 /* Px437_IBM_PS2thin1.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Resources/Fonts/Px437_IBM_PS2thin1.ttf"; sourceTree = "<group>"; };
+		ADE032F485E89BFFF6AC59D7 /* Px437_IBM_PS2thin3.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Resources/Fonts/Px437_IBM_PS2thin3.ttf"; sourceTree = "<group>"; };
+		FF342C3A17F4FB365BDC28DE /* Px437_IBM_PS2thin2.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Resources/Fonts/Px437_IBM_PS2thin2.ttf"; sourceTree = "<group>"; };
+		6112B02FEEC907978F35CBBC /* Px437_Wyse700b-2y.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Resources/Fonts/Px437_Wyse700b-2y.ttf"; sourceTree = "<group>"; };
+		99429A23CD7FABEF9B907F59 /* Px437_IBM_VGA9.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Resources/Fonts/Px437_IBM_VGA9.ttf"; sourceTree = "<group>"; };
+		8D483D58CA94EDB58C2BD7FB /* Px437_IBM_VGA8.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Resources/Fonts/Px437_IBM_VGA8.ttf"; sourceTree = "<group>"; };
+		8C0B81F8AC4CAA5C49286AD8 /* Px437_IBM_PS2thin4.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Resources/Fonts/Px437_IBM_PS2thin4.ttf"; sourceTree = "<group>"; };
+		5F3C7497302AEAEF19C74820 /* Px437_IBM_CGAthin-2y.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Resources/Fonts/Px437_IBM_CGAthin-2y.ttf"; sourceTree = "<group>"; };
+		B55D4255E593A86F3862D5C1 /* Px437_VGA_SquarePx.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Resources/Fonts/Px437_VGA_SquarePx.ttf"; sourceTree = "<group>"; };
+		0D92978F3341FB335ADD8518 /* Px437_IBM_MDA.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Resources/Fonts/Px437_IBM_MDA.ttf"; sourceTree = "<group>"; };
+		101796B2677AD590078A8FD7 /* ProFontWindows.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Resources/Fonts/ProFontWindows.ttf"; sourceTree = "<group>"; };
+		3F95745B8BB72CC398BC7C77 /* Px437_IBM_Conv-2y.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Resources/Fonts/Px437_IBM_Conv-2y.ttf"; sourceTree = "<group>"; };
+		21AB19BA26F3CD644B569810 /* Px437_Verite_8x16.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Resources/Fonts/Px437_Verite_8x16.ttf"; sourceTree = "<group>"; };
+		17994EC4C4BA16272CFEA387 /* PxPlus_IBM_CGAthin-2y.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Resources/Fonts/PxPlus_IBM_CGAthin-2y.ttf"; sourceTree = "<group>"; };
+		44798746CD3B3463DBC4AB1E /* Px437_AmstradPC1512-2y.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Resources/Fonts/Px437_AmstradPC1512-2y.ttf"; sourceTree = "<group>"; };
+		968CCAEEFD4419A66DF66775 /* Px437_IBM_BIOS-2y.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Resources/Fonts/Px437_IBM_BIOS-2y.ttf"; sourceTree = "<group>"; };
+		4D4196D63632BBC59CE6A9E1 /* Px437_Wyse700a-2y.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Resources/Fonts/Px437_Wyse700a-2y.ttf"; sourceTree = "<group>"; };
+		909273A5197C29BCE2EEA7A2 /* Px437_IBM_ISO8.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Resources/Fonts/Px437_IBM_ISO8.ttf"; sourceTree = "<group>"; };
+		07C255407141108CAE435BE6 /* Px437_ATI_8x8-2y.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Resources/Fonts/Px437_ATI_8x8-2y.ttf"; sourceTree = "<group>"; };
+		CC25BDA1072EABB892AB12CC /* Px437_ATI_8x14.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Resources/Fonts/Px437_ATI_8x14.ttf"; sourceTree = "<group>"; };
+		15C9D37DEA21E4F070D6E343 /* Px437_Verite_8x8-2y.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Resources/Fonts/Px437_Verite_8x8-2y.ttf"; sourceTree = "<group>"; };
+		F4C8FAAF57129447C18DB4B4 /* Px437_ATI_8x16.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Resources/Fonts/Px437_ATI_8x16.ttf"; sourceTree = "<group>"; };
+		582D56DD2EEE76566B46A63A /* BlockZone.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Resources/Fonts/BlockZone.ttf"; sourceTree = "<group>"; };
+		167E0C061C1098A8962A851C /* Px437_CompaqThin_8x16.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Resources/Fonts/Px437_CompaqThin_8x16.ttf"; sourceTree = "<group>"; };
+		D1E8AB3680DF5C0B79A61BDB /* Px437_TandyOld_TV-2y.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Resources/Fonts/Px437_TandyOld_TV-2y.ttf"; sourceTree = "<group>"; };
+		6A5C07E0F035BE15276FD453 /* Px437_TandyNew_TV-2y.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Resources/Fonts/Px437_TandyNew_TV-2y.ttf"; sourceTree = "<group>"; };
+		C001CAFE0000000000000005 /* ThemeManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sources/ThemeManager.swift; sourceTree = "<group>"; };
+		C001CAFE0000000000000001 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sources/Constants.swift; sourceTree = "<group>"; };
+		C001CAFE0000000000000002 /* ThemeAwareScrollView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sources/ThemeAwareScrollView.swift; sourceTree = "<group>"; };
+		92C25A04A84D45EC9124075A /* Document.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sources/Document.swift; sourceTree = "<group>"; };
+		BF12DB8ACE14464FAB57F6FF /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sources/ViewController.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60718293A4B5C /* PreferencesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sources/PreferencesViewController.swift; sourceTree = "<group>"; };
+		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		256AC3D90F4B6AC300CF3369 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sources/AppDelegate.swift; sourceTree = "<group>"; };
+		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; explicitFileType = text.plist.xml; fileEncoding = 4; path = Info.plist; sourceTree = "<group>"; };
+		8D1107320486CEB800E47090 /* The Last NFO Viewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "The Last NFO Viewer.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D750355F249E68AE0004739B /* More Perfect DOS VGA.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Resources/Fonts/More Perfect DOS VGA.ttf"; sourceTree = "<group>"; };
+		DEADBEEF000000F0 /* FiraCodeNerdFontMono-Retina.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Resources/Fonts/FiraCodeNerdFontMono-Retina.ttf"; sourceTree = "<group>"; };
+		DEADBEEF000000F2 /* JetBrainsMono-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Resources/Fonts/JetBrainsMono-Regular.ttf"; sourceTree = "<group>"; };
+		D7B19C5113ED514D003B4106 /* Credits.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = Resources/Credits.rtf; sourceTree = "<group>"; };
+		FA38B25327D2CF8D00397B5D /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = Resources/en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		FA38B25427D2CF8D00397B5D /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = Resources/en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		FA38B25627D2CF9400397B5D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Resources/Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		FA38B25727D2D50300397B5D /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = Resources/fr.lproj/Localizable.strings; sourceTree = "<group>"; };
+		FA38B25927D2D77B00397B5D /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = Resources/fr.lproj/MainMenu.strings; sourceTree = "<group>"; };
+		FA38B25B27D2D78300397B5D /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = Resources/en.lproj/MainMenu.strings; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		DEADBEEF00000006 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DEADBEEF0000000D /* Cocoa.framework in Frameworks */,
+				DEADBEEF0000000E /* Quartz.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8D11072E0486CEB800E47090 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		DEADBEEF00000004 /* QuickLook */ = {
+			isa = PBXGroup;
+			children = (
+				DEADBEEF00000030 /* NFO Preview.entitlements */,
+				DEADBEEF00000001 /* Info.plist */,
+				DEADBEEF00000002 /* PreviewViewController.swift */,
+			);
+			path = QuickLook;
+			sourceTree = "<group>";
+		};
+		080E96DDFE201D6D7F000001 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				C001CAFE0000000000000001 /* Constants.swift */,
+				C001CAFE0000000000000002 /* ThemeAwareScrollView.swift */,
+				256AC3D90F4B6AC300CF3369 /* AppDelegate.swift */,
+				92C25A04A84D45EC9124075A /* Document.swift */,
+				BF12DB8ACE14464FAB57F6FF /* ViewController.swift */,
+				A1B2C3D4E5F60718293A4B5C /* PreferencesViewController.swift */,
+			);
+			name = Classes;
+			sourceTree = "<group>";
+		};
+		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
+				DEADBEEF00000010 /* Quartz.framework */,
+			);
+			name = "Linked Frameworks";
+			sourceTree = "<group>";
+		};
+		19C28FACFE9D520D11CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				DEADBEEF00000003 /* NFO Preview.appex */,
+				8D1107320486CEB800E47090 /* The Last NFO Viewer.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		29B97314FDCFA39411CA2CEA /* MyNFOViewer */ = {
+			isa = PBXGroup;
+			children = (
+				DEADBEEF00000099 /* The Last NFO Viewer.entitlements */,
+				080E96DDFE201D6D7F000001 /* Classes */,
+				29B97315FDCFA39411CA2CEA /* Other Sources */,
+				29B97317FDCFA39411CA2CEA /* Resources */,
+				29B97323FDCFA39411CA2CEA /* Frameworks */,
+				19C28FACFE9D520D11CA2CBB /* Products */,
+				DEADBEEF00000004 /* QuickLook */,
+			);
+			name = MyNFOViewer;
+			sourceTree = "<group>";
+		};
+		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		29B97317FDCFA39411CA2CEA /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				DEADBEEF000000AC /* Assets.xcassets */,
+				A3E00DE466994BFEB753DBA7 /* Px437_IBM_PS2thin1.ttf */,
+				ADE032F485E89BFFF6AC59D7 /* Px437_IBM_PS2thin3.ttf */,
+				FF342C3A17F4FB365BDC28DE /* Px437_IBM_PS2thin2.ttf */,
+				6112B02FEEC907978F35CBBC /* Px437_Wyse700b-2y.ttf */,
+				99429A23CD7FABEF9B907F59 /* Px437_IBM_VGA9.ttf */,
+				8D483D58CA94EDB58C2BD7FB /* Px437_IBM_VGA8.ttf */,
+				8C0B81F8AC4CAA5C49286AD8 /* Px437_IBM_PS2thin4.ttf */,
+				5F3C7497302AEAEF19C74820 /* Px437_IBM_CGAthin-2y.ttf */,
+				B55D4255E593A86F3862D5C1 /* Px437_VGA_SquarePx.ttf */,
+				0D92978F3341FB335ADD8518 /* Px437_IBM_MDA.ttf */,
+				101796B2677AD590078A8FD7 /* ProFontWindows.ttf */,
+				3F95745B8BB72CC398BC7C77 /* Px437_IBM_Conv-2y.ttf */,
+				21AB19BA26F3CD644B569810 /* Px437_Verite_8x16.ttf */,
+				17994EC4C4BA16272CFEA387 /* PxPlus_IBM_CGAthin-2y.ttf */,
+				44798746CD3B3463DBC4AB1E /* Px437_AmstradPC1512-2y.ttf */,
+				968CCAEEFD4419A66DF66775 /* Px437_IBM_BIOS-2y.ttf */,
+				4D4196D63632BBC59CE6A9E1 /* Px437_Wyse700a-2y.ttf */,
+				909273A5197C29BCE2EEA7A2 /* Px437_IBM_ISO8.ttf */,
+				07C255407141108CAE435BE6 /* Px437_ATI_8x8-2y.ttf */,
+				CC25BDA1072EABB892AB12CC /* Px437_ATI_8x14.ttf */,
+				15C9D37DEA21E4F070D6E343 /* Px437_Verite_8x8-2y.ttf */,
+				F4C8FAAF57129447C18DB4B4 /* Px437_ATI_8x16.ttf */,
+				582D56DD2EEE76566B46A63A /* BlockZone.ttf */,
+				167E0C061C1098A8962A851C /* Px437_CompaqThin_8x16.ttf */,
+				D1E8AB3680DF5C0B79A61BDB /* Px437_TandyOld_TV-2y.ttf */,
+				6A5C07E0F035BE15276FD453 /* Px437_TandyNew_TV-2y.ttf */,
+				8D1107310486CEB800E47090 /* Info.plist */,
+				D7B19C5113ED514D003B4106 /* Credits.rtf */,
+				1DDD58140DA1D0A300B32029 /* MainMenu.xib */,
+				089C165CFE840E0CC02AAC07 /* InfoPlist.strings */,
+				D7F0DCC613EFE0B40056E5B4 /* Localizable.strings */,
+				D750355F249E68AE0004739B /* More Perfect DOS VGA.ttf */,
+				DEADBEEF000000F0 /* FiraCodeNerdFontMono-Retina.ttf */,
+				DEADBEEF000000F2 /* JetBrainsMono-Regular.ttf */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		DEADBEEF0000000B /* NFO Preview */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DEADBEEF0000000A /* Build configuration list for PBXNativeTarget "NFO Preview" */;
+			buildPhases = (
+				DEADBEEF00000005 /* Sources */,
+				DEADBEEF00000006 /* Frameworks */,
+				DEADBEEF00000007 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "NFO Preview";
+			productName = "NFO Preview";
+			productReference = DEADBEEF00000003 /* NFO Preview.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		8D1107260486CEB800E47090 /* The Last NFO Viewer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "The Last NFO Viewer" */;
+			buildPhases = (
+				8D1107290486CEB800E47090 /* Resources */,
+				8D11072C0486CEB800E47090 /* Sources */,
+				8D11072E0486CEB800E47090 /* Frameworks */,
+				D750355E249E68900004739B /* CopyFiles */,
+				DEADBEEF00000012 /* Embed QuickLook Plugin */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				DEADBEEF00000021 /* PBXTargetDependency */,
+			);
+			name = "The Last NFO Viewer";
+			productInstallPath = "$(HOME)/Applications";
+			productName = MyNFOViewer;
+			productReference = 8D1107320486CEB800E47090 /* The Last NFO Viewer.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		29B97313FDCFA39411CA2CEA /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1320;
+			};
+			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "The Last NFO Viewer" */;
+			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = en;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				de,
+				ja,
+				en,
+				fr,
+				Base,
+			);
+			mainGroup = 29B97314FDCFA39411CA2CEA /* MyNFOViewer */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				8D1107260486CEB800E47090 /* The Last NFO Viewer */,
+				DEADBEEF0000000B /* NFO Preview */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		DEADBEEF00000007 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DEADBEEF0000000F /* More Perfect DOS VGA.ttf in Resources */,
+				DEADBEEF000000F1 /* FiraCodeNerdFontMono-Retina.ttf in Resources */,
+				DEADBEEF000000F3 /* JetBrainsMono-Regular.ttf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8D1107290486CEB800E47090 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DEADBEEF000000AB /* Assets.xcassets in Resources */,
+				8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */,
+				1DDD58160DA1D0A300B32029 /* MainMenu.xib in Resources */,
+				D7B19C5213ED514D003B4106 /* Credits.rtf in Resources */,
+				D7F0DCC813EFE0B40056E5B4 /* Localizable.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		DEADBEEF00000005 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DEADBEEF0000000C /* PreviewViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8D11072C0486CEB800E47090 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C001CAFE0000000000000006 /* ThemeManager.swift in Sources */,
+				C001CAFE0000000000000003 /* Constants.swift in Sources */,
+				C001CAFE0000000000000004 /* ThemeAwareScrollView.swift in Sources */,
+				256AC3DA0F4B6AC300CF3369 /* AppDelegate.swift in Sources */,
+				BD2059377C034511826341F0 /* Document.swift in Sources */,
+				3377FBF7CCA0418AAACE77EC /* ViewController.swift in Sources */,
+				D4E5F60718293A4B5CA1B2C3 /* PreferencesViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		089C165CFE840E0CC02AAC07 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				FA38B25327D2CF8D00397B5D /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		1DDD58140DA1D0A300B32029 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				FA38B25627D2CF9400397B5D /* Base */,
+				FA38B25927D2D77B00397B5D /* fr */,
+				FA38B25B27D2D78300397B5D /* en */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+		D7F0DCC613EFE0B40056E5B4 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				FA38B25427D2CF8D00397B5D /* en */,
+				FA38B25727D2D50300397B5D /* fr */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		DEADBEEF00000008 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = QuickLook/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.nle.TheLastNFOViewer.QuickLook;
+				PRODUCT_NAME = "NFO Preview";
+				CODE_SIGN_ENTITLEMENTS = "QuickLook/NFO Preview.entitlements";
+				WRAPPER_EXTENSION = appex;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/PlugIns";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		DEADBEEF00000009 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = QuickLook/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.nle.TheLastNFOViewer.QuickLook;
+				PRODUCT_NAME = "NFO Preview";
+				CODE_SIGN_ENTITLEMENTS = "QuickLook/NFO Preview.entitlements";
+				WRAPPER_EXTENSION = appex;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/PlugIns";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		C01FCF4B08A954540054247B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INFOPLIST_FILE = Info.plist;
+				CODE_SIGN_ENTITLEMENTS = "The Last NFO Viewer.entitlements";
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nle.TheLastNFOViewer;
+				PRODUCT_NAME = "The Last NFO Viewer";
+			};
+			name = Debug;
+		};
+		C01FCF4C08A954540054247B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				GCC_MODEL_TUNING = G5;
+				INFOPLIST_FILE = Info.plist;
+				CODE_SIGN_ENTITLEMENTS = "The Last NFO Viewer.entitlements";
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nle.TheLastNFOViewer;
+				PRODUCT_NAME = "The Last NFO Viewer";
+			};
+			name = Release;
+		};
+		C01FCF4F08A954540054247B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		C01FCF5008A954540054247B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		DEADBEEF0000000A /* Build configuration list for PBXNativeTarget "NFO Preview" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DEADBEEF00000008 /* Debug */,
+				DEADBEEF00000009 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "The Last NFO Viewer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C01FCF4B08A954540054247B /* Debug */,
+				C01FCF4C08A954540054247B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "The Last NFO Viewer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C01FCF4F08A954540054247B /* Debug */,
+				C01FCF5008A954540054247B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 29B97313FDCFA39411CA2CEA /* Project object */;
+}
