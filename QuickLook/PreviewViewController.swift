@@ -110,7 +110,7 @@ class PreviewViewController: NSViewController, QLPreviewingController {
     
     func preparePreviewOfFile(at url: URL, completionHandler handler: @escaping (Error?) -> Void) {
         // Try to register custom font
-        registerFont()
+        // registerFont()
         
         do {
             let startAccess = url.startAccessingSecurityScopedResource()
@@ -179,12 +179,15 @@ class PreviewViewController: NSViewController, QLPreviewingController {
     
     private func updateText(_ content: String) {
         let fontSize = (sharedConfig["fontSize"] as? Double) ?? 14.0
-        let fontName = (sharedConfig["fontName"] as? String) ?? "More Perfect DOS VGA"
+        // let fontName = (sharedConfig["fontName"] as? String) ?? "More Perfect DOS VGA"
         
         // Try custom font first, fallback to user fixed pitch, then system mono
+        let font = NSFont.monospacedSystemFont(ofSize: fontSize, weight: .regular)
+        /*
         let font = NSFont(name: fontName, size: fontSize) 
             ?? NSFont.userFixedPitchFont(ofSize: fontSize) 
             ?? NSFont.monospacedSystemFont(ofSize: fontSize, weight: .regular)
+        */
         
         textView.font = font
         textView.string = content
