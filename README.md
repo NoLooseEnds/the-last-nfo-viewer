@@ -51,7 +51,7 @@ Summary:
 2.  Build the **The Last NFO Viewer** scheme.
 3.  Build the **NFO Preview** scheme (for QuickLook).
 
-### Running the App
+## Running the App
 Since this app is self-signed (ad-hoc), macOS Gatekeeper might prevent it from opening.
 
 1.  **Right-click** the app and select **Open**.
@@ -63,6 +63,17 @@ If you move the app to `/Applications` and still face issues (e.g. "App is damag
 ```bash
 xattr -cr /Applications/The\ Last\ NFO\ Viewer.app
 ```
+
+### QuickLook Limitations
+If you installed via Homebrew or downloaded the zip, the QuickLook plugin might show a blank window or fail to load due to macOS strict security requirements for App Extensions in ad-hoc signed apps.
+
+To fix this, you can try:
+1. Moving the app to `/Applications`.
+2. Running: `xattr -cr /Applications/The\ Last\ NFO\ Viewer.app`
+3. Reloading QuickLook: `qlmanage -r`
+
+If it still doesn't work, compiling the app from source using Xcode will guarantee the QuickLook plugin works on your machine.
+
 
 ## History
 Original project "NFO Viewer" by [Kris Gybels](https://blockart.sourceforge.net/index.html)  
@@ -79,15 +90,6 @@ If the QuickLook preview doesn't appear or doesn't update after changing setting
     ```
 2.  **Verify Permissions**: The plugin is sandboxed. If it fails to read your settings, ensure you have run the main application at least once.
 
-### QuickLook Limitations
-If you installed via Homebrew or downloaded the zip, the QuickLook plugin might show a blank window or fail to load due to macOS strict security requirements for App Extensions in ad-hoc signed apps.
-
-To fix this, you can try:
-1. Moving the app to `/Applications`.
-2. Running: `xattr -cr /Applications/The\ Last\ NFO\ Viewer.app`
-3. Reloading QuickLook: `qlmanage -r`
-
-If it still doesn't work, compiling the app from source using Xcode will guarantee the QuickLook plugin works on your machine.
 
 ## License
 See [LICENSE](LICENSE) file.
