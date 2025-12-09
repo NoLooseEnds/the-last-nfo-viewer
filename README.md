@@ -1,4 +1,4 @@
-<img src="Design/exports/nfo-viewer-iOS-Default-1024x1024@1x.png" width="10%" alt="App Icon" /> 
+<img src="Design/exports/nfo-viewer-iOS-Default-1024x1024@1x.png" width="15%" alt="App Icon" /> 
 
 # The Last NFO Viewer
 
@@ -22,13 +22,26 @@ This project has been inspired by [Yet Another NFO Viewer](https://github.com/ma
   - Extensive collection of Px437 (IBM CGA/EGA/VGA) fonts.
 
 ## Screenshots
-<img src="Screenshots/app-window.png" width="50%" alt="Main App Window" /> 
-<img src="Screenshots/quicklook.png" width="50%" alt="QuickLook Preview" />
+<img src="Screenshots/app-window.png" width="70%" alt="Main App Window" /> 
+<img src="Screenshots/quicklook.png" width="70%" alt="QuickLook Preview" />
 
 ### Configuration
 The QuickLook plugin shares settings with the main application. When you change fonts or colors in the App's **Preferences**, the changes are saved to a shared configuration file (`~/.the-last-nfo-viewer.json`) which the QuickLook plugin reads.
 
 ## Installation
+
+### Via Homebrew
+
+```bash
+brew install NoLooseEnds/tap/the-last-nfo-viewer
+```
+
+Or tap the repository first:
+
+```bash
+brew tap NoLooseEnds/tap
+brew install the-last-nfo-viewer
+```
 
 ### From Source
 Please refer to [BUILD.md](BUILD.md) for detailed build instructions.

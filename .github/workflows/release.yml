@@ -1,0 +1,62 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: macos-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+
+      - name: Select Xcode
+        run: sudo xcode-select -switch /Applications/Xcode.app/Contents/Developer
+
+      - name: Build App
+        run: |
+          xcodebuild -project "The Last NFO Viewer.xcodeproj" \
+            -scheme "The Last NFO Viewer" \
+            -configuration Release \
+            -derivedDataPath build/DerivedData \
+            build
+
+      - name: Zip Application
+        run: |
+          cd "build/DerivedData/Build/Products/Release"
+          zip -r ../../../../../TheLastNFOViewer.zip "The Last NFO Viewer.app"
+
+      - name: Calculate SHA256
+        id: shasum
+        run: |
+          echo "SHA=$(shasum -a 256 TheLastNFOViewer.zip | awk '{print $1}')" >> $GITHUB_ENV
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: TheLastNFOViewer.zip
+          body: |
+            Release ${{ env.VERSION }}
+            
+            SHA256: ${{ env.SHA }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Step to update Homebrew Tap
+      # Requires a repo named 'homebrew-tap' and a PAT secret named 'HOMEBREW_TAP_TOKEN'
+      - name: Update Homebrew Cask
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          repository: NoLooseEnds/homebrew-tap
+          event-type: update-cask
+          client-payload: '{"version": "${{ env.VERSION }}", "sha": "${{ env.SHA }}"}'
