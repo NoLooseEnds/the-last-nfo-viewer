@@ -31,6 +31,9 @@ class PreviewViewController: NSViewController, QLPreviewingController {
         textView.isEditable = false
         textView.isSelectable = true
         
+        // DEBUG: Set initial text to verify view visibility
+        textView.string = "QuickLook Plugin Loaded. Waiting for content..."
+        
         scrollView.documentView = textView
         self.view = scrollView
         
