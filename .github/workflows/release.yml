@@ -28,8 +28,7 @@ jobs:
             -scheme "The Last NFO Viewer" \
             -configuration Release \
             -derivedDataPath build/DerivedData \
-            build \
-            ENABLE_HARDENED_RUNTIME=NO
+            build
 
       - name: Zip Application
         run: |
