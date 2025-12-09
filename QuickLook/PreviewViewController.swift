@@ -113,6 +113,9 @@ class PreviewViewController: NSViewController, QLPreviewingController {
         registerFont()
         
         do {
+            let startAccess = url.startAccessingSecurityScopedResource()
+            defer { if startAccess { url.stopAccessingSecurityScopedResource() } }
+            
             let data = try Data(contentsOf: url)
             
             // CP437 Decoding
@@ -132,14 +135,15 @@ class PreviewViewController: NSViewController, QLPreviewingController {
 
             DispatchQueue.main.async {
                 self.updateText(content)
+                handler(nil)
             }
-            handler(nil)
         } catch {
             let errorMsg = "Failed to read file: \(error.localizedDescription)"
+            NSLog("QuickLook Error: %@", errorMsg)
             DispatchQueue.main.async {
                 self.updateText(errorMsg)
+                handler(nil)
             }
-            handler(nil)
         }
     }
     
@@ -168,7 +172,8 @@ class PreviewViewController: NSViewController, QLPreviewingController {
                 self.sharedConfig = json
             }
         } catch {
-            print("Failed to load shared config: \(error)")
+            NSLog("QuickLook Config Error: %@", error.localizedDescription)
+            // Fallback to empty config
         }
     }
     
