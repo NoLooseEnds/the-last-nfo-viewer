@@ -31,9 +31,6 @@ class PreviewViewController: NSViewController, QLPreviewingController {
         textView.isEditable = false
         textView.isSelectable = true
         
-        // DEBUG: Set initial text to verify view visibility
-        textView.string = "QuickLook Plugin Loaded. Waiting for content..."
-        
         scrollView.documentView = textView
         self.view = scrollView
         
@@ -142,7 +139,6 @@ class PreviewViewController: NSViewController, QLPreviewingController {
             }
         } catch {
             let errorMsg = "Failed to read file: \(error.localizedDescription)"
-            NSLog("QuickLook Error: %@", errorMsg)
             DispatchQueue.main.async {
                 self.updateText(errorMsg)
                 handler(nil)
@@ -159,6 +155,7 @@ class PreviewViewController: NSViewController, QLPreviewingController {
     }
     
     private func getRealHomeDirectory() -> URL? {
+        // Use standard FileManager API which is safer in sandbox than getpwuid
         return FileManager.default.homeDirectoryForCurrentUser
     }
     
@@ -172,8 +169,7 @@ class PreviewViewController: NSViewController, QLPreviewingController {
                 self.sharedConfig = json
             }
         } catch {
-            NSLog("QuickLook Config Error: %@", error.localizedDescription)
-            // Fallback to empty config
+            print("Failed to load shared config: \(error)")
         }
     }
     
@@ -187,7 +183,6 @@ class PreviewViewController: NSViewController, QLPreviewingController {
             ?? NSFont.monospacedSystemFont(ofSize: fontSize, weight: .regular)
         
         textView.font = font
-        textView.string = content
         textView.string = content
         
         if let highlight = sharedConfig["highlightLinks"] as? Bool, highlight {

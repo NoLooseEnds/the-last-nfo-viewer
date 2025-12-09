@@ -30,6 +30,7 @@
 			<array>
 				<string>com.nle.nfo</string>
 				<string>public.plain-text</string>
+				<string>public.data</string>
 			</array>
 			<key>QLSupportsSearchableItems</key>
 			<false/>
