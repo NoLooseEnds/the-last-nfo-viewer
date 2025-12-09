@@ -155,8 +155,10 @@ class PreviewViewController: NSViewController, QLPreviewingController {
     }
     
     private func getRealHomeDirectory() -> URL? {
-        // Use standard FileManager API which is safer in sandbox than getpwuid
-        return FileManager.default.homeDirectoryForCurrentUser
+        if let pw = getpwuid(getuid()), let homeDir = String(validatingUTF8: pw.pointee.pw_dir) {
+            return URL(fileURLWithPath: homeDir)
+        }
+        return nil
     }
     
     private func loadSharedConfig() {
