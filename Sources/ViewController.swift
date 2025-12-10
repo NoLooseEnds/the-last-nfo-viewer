@@ -297,5 +297,71 @@ class ViewController: NSViewController {
         // Return cached width + padding
         return cachedContentWidth + 60 // 20+20 padding + 20 extra safety
     }
+    
+    // MARK: - Image Export
+    
+    func generateImage() -> NSImage? {
+        guard let layoutManager = textView.layoutManager,
+              let textContainer = textView.textContainer,
+              let textStorage = textView.textStorage else { return nil }
+        
+        // 1. Calculate the bounding rect of all text
+        // Ensure layout is up to date
+        layoutManager.ensureLayout(for: textContainer)
+        var contentRect = layoutManager.usedRect(for: textContainer)
+        
+        // Add padding
+        let padding: CGFloat = 20.0
+        contentRect.size.width += padding * 2
+        contentRect.size.height += padding * 2
+        
+        // 2. Create image
+        let image = NSImage(size: contentRect.size)
+        
+        image.lockFocus()
+        
+        // 3. Draw background
+        let backgroundColor = ThemeManager.shared.backgroundColor
+        backgroundColor.setFill()
+        NSBezierPath(rect: NSRect(origin: .zero, size: contentRect.size)).fill()
+        
+        // 4. Draw text
+        // Offset by padding
+        let origin = NSPoint(x: padding, y: padding)
+        let glyphRange = layoutManager.glyphRange(for: textContainer)
+        layoutManager.drawBackground(forGlyphRange: glyphRange, at: origin)
+        layoutManager.drawGlyphs(forGlyphRange: glyphRange, at: origin)
+        
+        image.unlockFocus()
+        
+        return image
+    }
+    
+    @objc func copyAsImage(_ sender: Any?) {
+        guard let image = generateImage() else { return }
+        
+        let pasteboard = NSPasteboard.general
+        pasteboard.clearContents()
+        pasteboard.writeObjects([image])
+    }
+    
+    @objc func exportAsImage(_ sender: Any?) {
+        guard let image = generateImage(),
+              let tiffData = image.tiffRepresentation,
+              let bitmapRep = NSBitmapImageRep(data: tiffData),
+              let pngData = bitmapRep.representation(using: .png, properties: [:]) else { return }
+        
+        let savePanel = NSSavePanel()
+        savePanel.allowedContentTypes = [.png]
+        savePanel.canCreateDirectories = true
+        savePanel.isExtensionHidden = false
+        savePanel.nameFieldStringValue = (self.view.window?.title ?? "Export") + ".png"
+        
+        savePanel.beginSheetModal(for: self.view.window!) { response in
+            if response == .OK, let url = savePanel.url {
+                try? pngData.write(to: url)
+            }
+        }
+    }
 }
 
