@@ -13,6 +13,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Setup View Menu
         setupViewMenu()
         setupPreferencesMenu()
+        setupExportMenu()
+        setupEditMenu()
         
         // If no documents are open (e.g. app launched directly), show the open panel
         DispatchQueue.main.async {
@@ -108,6 +110,45 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             mainMenu?.insertItem(viewMenuItem, at: windowIndex)
         } else {
             mainMenu?.addItem(viewMenuItem)
+        }
+    }
+    
+    private func setupExportMenu() {
+        guard let mainMenu = NSApplication.shared.mainMenu,
+              let fileMenu = mainMenu.item(withTitle: "File")?.submenu else { return }
+        
+        // Find "Export..." or "Save As..." to place our item nearby
+        // Using generic saveDocumentAs: selector
+        let saveAsSelector = NSSelectorFromString("saveDocumentAs:")
+        let index = fileMenu.indexOfItem(withTarget: nil, andAction: saveAsSelector)
+        
+        if index >= 0 {
+             let exportImageTitle = NSLocalizedString("MENU_EXPORT_IMAGE", value: "Export as Image…", comment: "Menu item for Export as Image")
+             // Check if already exists
+             if fileMenu.item(withTitle: exportImageTitle) == nil {
+                 let exportImageItem = NSMenuItem(title: exportImageTitle, action: #selector(ViewController.exportAsImage(_:)), keyEquivalent: "")
+                 fileMenu.insertItem(exportImageItem, at: index + 1)
+             }
+        }
+    }
+    
+    private func setupEditMenu() {
+        guard let mainMenu = NSApplication.shared.mainMenu,
+              let editMenu = mainMenu.item(withTitle: "Edit")?.submenu else { return }
+        
+        // Find "Copy" item
+        let copySelector = NSSelectorFromString("copy:")
+        let index = editMenu.indexOfItem(withTarget: nil, andAction: copySelector)
+        
+        if index >= 0 {
+             let copyImageTitle = NSLocalizedString("MENU_COPY_IMAGE", value: "Copy as Image", comment: "Menu item for Copy as Image")
+             // Check if already exists
+             if editMenu.item(withTitle: copyImageTitle) == nil {
+                 let copyImageItem = NSMenuItem(title: copyImageTitle, action: #selector(ViewController.copyAsImage(_:)), keyEquivalent: "C")
+                 copyImageItem.keyEquivalentModifierMask = [.command, .shift]
+                 
+                 editMenu.insertItem(copyImageItem, at: index + 1)
+             }
         }
     }
 
