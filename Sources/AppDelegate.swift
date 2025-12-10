@@ -100,7 +100,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         decreaseItem.keyEquivalentModifierMask = [.command]
         viewMenu.addItem(decreaseItem)
         
-        let resetTitle = NSLocalizedString("MENU_RESET_FONT", value: "Actual Size", comment: "Menu item to reset font size")
+        let resetTitle = NSLocalizedString("MENU_RESET_FONT", value: "Default Font Size", comment: "Menu item to reset font size")
         let resetItem = NSMenuItem(title: resetTitle, action: #selector(ViewController.resetFontSize), keyEquivalent: "0")
         resetItem.keyEquivalentModifierMask = [.command]
         viewMenu.addItem(resetItem)
