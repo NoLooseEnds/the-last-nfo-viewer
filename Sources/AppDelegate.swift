@@ -117,18 +117,34 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         guard let mainMenu = NSApplication.shared.mainMenu,
               let fileMenu = mainMenu.item(withTitle: "File")?.submenu else { return }
         
-        // Find "Export..." or "Save As..." to place our item nearby
-        // Using generic saveDocumentAs: selector
-        let saveAsSelector = NSSelectorFromString("saveDocumentAs:")
-        let index = fileMenu.indexOfItem(withTarget: nil, andAction: saveAsSelector)
+        // Remove standard "Export..." item if it exists (usually added by IB)
+        // Its selector is typically saveDocumentAs: but we can search by title to be sure, or tag.
+        // The "Export..." item we see is likely standard Cocoa behavior or from the XIB.
+        // Let's remove the item that calls saveDocumentAs: if it's the standard one
+        // and replace it with our own, or just remove it if we don't want it.
+        // User asked "what is the Export function", implying they don't want the PDF/standard one.
+        // We will remove it.
         
-        if index >= 0 {
-             let exportImageTitle = NSLocalizedString("MENU_EXPORT_IMAGE", value: "Export as Image…", comment: "Menu item for Export as Image")
-             // Check if already exists
-             if fileMenu.item(withTitle: exportImageTitle) == nil {
-                 let exportImageItem = NSMenuItem(title: exportImageTitle, action: #selector(ViewController.exportAsImage(_:)), keyEquivalent: "")
-                 fileMenu.insertItem(exportImageItem, at: index + 1)
-             }
+        let saveAsSelector = NSSelectorFromString("saveDocumentAs:")
+        if let index = fileMenu.indexOfItem(withTarget: nil, andAction: saveAsSelector) as Int?, index >= 0 {
+             fileMenu.removeItem(at: index)
+        }
+        
+        // Find "Print..." to place our item nearby (usually export is near print/save)
+        let printSelector = NSSelectorFromString("print:")
+        let printIndex = fileMenu.indexOfItem(withTarget: nil, andAction: printSelector)
+        
+        let targetIndex = printIndex >= 0 ? printIndex : fileMenu.numberOfItems
+        
+        let exportImageTitle = NSLocalizedString("MENU_EXPORT_IMAGE", value: "Export as Image…", comment: "Menu item for Export as Image")
+        if fileMenu.item(withTitle: exportImageTitle) == nil {
+             let exportImageItem = NSMenuItem(title: exportImageTitle, action: #selector(ViewController.exportAsImage(_:)), keyEquivalent: "E")
+             exportImageItem.keyEquivalentModifierMask = [.command] // Cmd+E for Export Image? Or just standard.
+             // Standard Export is usually Cmd+Shift+E or similar. Let's leave no shortcut or use Shift+Cmd+E
+             exportImageItem.keyEquivalentModifierMask = [.command, .shift]
+             exportImageItem.keyEquivalent = "e"
+             
+             fileMenu.insertItem(exportImageItem, at: targetIndex)
         }
     }
     

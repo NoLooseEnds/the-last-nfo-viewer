@@ -343,6 +343,53 @@ class ViewController: NSViewController {
         let pasteboard = NSPasteboard.general
         pasteboard.clearContents()
         pasteboard.writeObjects([image])
+        
+        showNotificationPopup(text: "Copied as Image")
+    }
+    
+    private func showNotificationPopup(text: String) {
+        let hudView = NSView(frame: NSRect(x: 0, y: 0, width: 200, height: 50))
+        hudView.wantsLayer = true
+        hudView.layer?.backgroundColor = NSColor.black.withAlphaComponent(0.75).cgColor
+        hudView.layer?.cornerRadius = 10
+        
+        let textField = NSTextField(labelWithString: text)
+        textField.textColor = .white
+        textField.font = NSFont.systemFont(ofSize: 14, weight: .medium)
+        textField.alignment = .center
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        
+        hudView.addSubview(textField)
+        
+        NSLayoutConstraint.activate([
+            textField.centerXAnchor.constraint(equalTo: hudView.centerXAnchor),
+            textField.centerYAnchor.constraint(equalTo: hudView.centerYAnchor)
+        ])
+        
+        // Center in window
+        guard let windowView = self.view.window?.contentView else { return }
+        hudView.frame.origin = CGPoint(
+            x: (windowView.bounds.width - hudView.frame.width) / 2,
+            y: (windowView.bounds.height - hudView.frame.height) / 2
+        )
+        
+        windowView.addSubview(hudView)
+        
+        // Animation
+        hudView.alphaValue = 0
+        NSAnimationContext.runAnimationGroup({ context in
+            context.duration = 0.2
+            hudView.animator().alphaValue = 1
+        }, completionHandler: {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                NSAnimationContext.runAnimationGroup({ context in
+                    context.duration = 0.5
+                    hudView.animator().alphaValue = 0
+                }, completionHandler: {
+                    hudView.removeFromSuperview()
+                })
+            }
+        })
     }
     
     @objc func exportAsImage(_ sender: Any?) {
@@ -352,7 +399,11 @@ class ViewController: NSViewController {
               let pngData = bitmapRep.representation(using: .png, properties: [:]) else { return }
         
         let savePanel = NSSavePanel()
-        savePanel.allowedContentTypes = [.png]
+        if #available(macOS 11.0, *) {
+            savePanel.allowedContentTypes = [.png]
+        } else {
+            savePanel.allowedFileTypes = ["png"]
+        }
         savePanel.canCreateDirectories = true
         savePanel.isExtensionHidden = false
         savePanel.nameFieldStringValue = (self.view.window?.title ?? "Export") + ".png"
