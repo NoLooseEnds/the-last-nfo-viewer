@@ -5,6 +5,7 @@ class PreferencesViewController: NSViewController {
     private let fontPopup = NSPopUpButton()
     private let appearancePopup = NSPopUpButton()
     private let alignmentPopup = NSPopUpButton()
+    private let copyFormatPopup = NSPopUpButton()
     private let fontSizeField = NSTextField()
     private let fontSizeStepper = NSStepper()
     
@@ -104,6 +105,15 @@ class PreferencesViewController: NSViewController {
         alignmentPopup.target = self
         alignmentPopup.action = #selector(controlChanged)
         stackView.addArrangedSubview(createRow(label: loc("PREF_LABEL_ALIGNMENT", "Alignment:"), control: alignmentPopup))
+        
+        // Copy Format
+        copyFormatPopup.removeAllItems()
+        copyFormatPopup.addItem(withTitle: "PNG")
+        copyFormatPopup.addItem(withTitle: "SVG")
+        
+        copyFormatPopup.target = self
+        copyFormatPopup.action = #selector(controlChanged)
+        stackView.addArrangedSubview(createRow(label: loc("PREF_LABEL_COPY_FORMAT", "Copy As:"), control: copyFormatPopup))
         
         // Font Size
         let sizeStack = NSStackView()
@@ -250,6 +260,9 @@ class PreferencesViewController: NSViewController {
         }
         alignmentPopup.selectItem(at: alignIndex)
         
+        let copyFormat = defaults.string(forKey: Constants.Defaults.copyFormat) ?? "png"
+        copyFormatPopup.selectItem(withTitle: copyFormat.uppercased())
+        
         let fontSize = defaults.double(forKey: Constants.Defaults.fontSize)
         fontSizeField.doubleValue = fontSize > 0 ? fontSize : 16.0
         fontSizeStepper.doubleValue = fontSizeField.doubleValue
@@ -286,6 +299,8 @@ class PreferencesViewController: NSViewController {
         default: alignValue = "Left"
         }
         defaults.set(alignValue, forKey: Constants.Defaults.textAlignment)
+        
+        defaults.set(copyFormatPopup.selectedItem?.title.lowercased(), forKey: Constants.Defaults.copyFormat)
         
         defaults.set(highlightLinksCheckbox.state == .on, forKey: Constants.Defaults.highlightLinks)
         
