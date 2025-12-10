@@ -1,4 +1,6 @@
 import Cocoa
+import UniformTypeIdentifiers
+import CoreText
 
 class ViewController: NSViewController {
     
@@ -15,6 +17,7 @@ class ViewController: NSViewController {
     
     private var textView: NSTextView!
     private var cachedContentWidth: CGFloat = 0
+    private let exportPadding: CGFloat = 20.0
     
     override func loadView() {
         let scrollView = ThemeAwareScrollView()
@@ -311,40 +314,62 @@ class ViewController: NSViewController {
         var contentRect = layoutManager.usedRect(for: textContainer)
         
         // Add padding
-        let padding: CGFloat = 20.0
+        let padding = self.exportPadding
         contentRect.size.width += padding * 2
         contentRect.size.height += padding * 2
         
-        // 2. Create image
-        let image = NSImage(size: contentRect.size)
-        
-        image.lockFocus()
-        
-        // 3. Draw background
-        let backgroundColor = ThemeManager.shared.backgroundColor
-        backgroundColor.setFill()
-        NSBezierPath(rect: NSRect(origin: .zero, size: contentRect.size)).fill()
-        
-        // 4. Draw text
-        // Offset by padding
-        let origin = NSPoint(x: padding, y: padding)
-        let glyphRange = layoutManager.glyphRange(for: textContainer)
-        layoutManager.drawBackground(forGlyphRange: glyphRange, at: origin)
-        layoutManager.drawGlyphs(forGlyphRange: glyphRange, at: origin)
-        
-        image.unlockFocus()
+        // 2. Create image using block-based API to support flipped coordinates
+        let image = NSImage(size: contentRect.size, flipped: true) { rect in
+            // 3. Draw background
+            let backgroundColor = ThemeManager.shared.backgroundColor
+            backgroundColor.setFill()
+            NSBezierPath(rect: rect).fill()
+            
+            // 4. Draw text
+            // Offset by padding
+            let origin = NSPoint(x: padding, y: padding)
+            let glyphRange = layoutManager.glyphRange(for: textContainer)
+            layoutManager.drawBackground(forGlyphRange: glyphRange, at: origin)
+            layoutManager.drawGlyphs(forGlyphRange: glyphRange, at: origin)
+            
+            return true
+        }
         
         return image
     }
     
     @objc func copyAsImage(_ sender: Any?) {
-        guard let image = generateImage() else { return }
+        // Standard action: Use preferred format
+        let copyFormat = UserDefaults.standard.string(forKey: Constants.Defaults.copyFormat) ?? "png"
+        let preferSVG = copyFormat == "svg"
         
-        let pasteboard = NSPasteboard.general
-        pasteboard.clearContents()
-        pasteboard.writeObjects([image])
+        performCopy(asSVG: preferSVG)
+    }
+    
+    @objc func copyAsAlternateImage(_ sender: Any?) {
+        // Alternate action: Use the OTHER format
+        let copyFormat = UserDefaults.standard.string(forKey: Constants.Defaults.copyFormat) ?? "png"
+        let preferSVG = copyFormat == "svg"
         
-        showNotificationPopup(text: "Copied as Image")
+        // If preferred is SVG, alternate is PNG (so asSVG = false)
+        // If preferred is PNG, alternate is SVG (so asSVG = true)
+        performCopy(asSVG: !preferSVG)
+    }
+    
+    private func performCopy(asSVG: Bool) {
+        if asSVG {
+            guard let svgContent = generateSVG() else { return }
+            let pasteboard = NSPasteboard.general
+            pasteboard.clearContents()
+            pasteboard.setString(svgContent, forType: .string)
+            showNotificationPopup(text: "Copied as SVG")
+        } else {
+            guard let image = generateImage() else { return }
+            let pasteboard = NSPasteboard.general
+            pasteboard.clearContents()
+            pasteboard.writeObjects([image])
+            showNotificationPopup(text: "Copied as PNG")
+        }
     }
     
     private func showNotificationPopup(text: String) {
@@ -392,27 +417,277 @@ class ViewController: NSViewController {
         })
     }
     
-    @objc func exportAsImage(_ sender: Any?) {
-        guard let image = generateImage(),
-              let tiffData = image.tiffRepresentation,
-              let bitmapRep = NSBitmapImageRep(data: tiffData),
-              let pngData = bitmapRep.representation(using: .png, properties: [:]) else { return }
-        
+    @objc func exportFile(_ sender: Any?) {
         let savePanel = NSSavePanel()
-        if #available(macOS 11.0, *) {
-            savePanel.allowedContentTypes = [.png]
-        } else {
-            savePanel.allowedFileTypes = ["png"]
-        }
+        
+        // Setup accessory view for format selection
+        let accessoryView = NSView(frame: NSRect(x: 0, y: 0, width: 200, height: 40))
+        let formatPopup = NSPopUpButton(frame: NSRect(x: 60, y: 10, width: 100, height: 24))
+        formatPopup.addItems(withTitles: ["PNG", "SVG"])
+        
+        let label = NSTextField(labelWithString: "Format:")
+        label.frame = NSRect(x: 0, y: 12, width: 55, height: 20)
+        label.alignment = .right
+        
+        accessoryView.addSubview(label)
+        accessoryView.addSubview(formatPopup)
+        
+        savePanel.accessoryView = accessoryView
         savePanel.canCreateDirectories = true
         savePanel.isExtensionHidden = false
-        savePanel.nameFieldStringValue = (self.view.window?.title ?? "Export") + ".png"
+        
+        // Set initial state
+        let copyFormat = UserDefaults.standard.string(forKey: Constants.Defaults.copyFormat) ?? "png"
+        if copyFormat == "svg" {
+            formatPopup.selectItem(withTitle: "SVG")
+            savePanel.allowedFileTypes = ["svg"]
+        } else {
+            formatPopup.selectItem(withTitle: "PNG")
+            savePanel.allowedFileTypes = ["png"]
+        }
+        
+        savePanel.nameFieldStringValue = (self.view.window?.title ?? "Export")
+        
+        // Handle format change in save panel
+        // Note: NSSavePanel doesn't easily support dynamic extension changes via accessory view events in a simple way
+        // without subclassing or delegate. But we can simply rely on the user checking the dropdown.
+        // Actually, updating the allowedFileTypes while the panel is open is tricky.
+        // A simpler approach for the user: Just have the dropdown set the extension?
+        // Let's attach an action to the popup to update the allowed types and name field.
+        
+        formatPopup.target = self
+        formatPopup.action = #selector(exportFormatChanged(_:))
+        // We need to store reference to savePanel to update it, but we can't easily pass it.
+        // Helper object? Or just use associated object / tag?
+        // Let's use a simpler approach: "Export as..." with a format selector.
+        
+        // Actually, standard macOS apps often put the format selector in the accessory view and update the panel.
+        // Let's try to update the panel from the action. We can associate the panel with the popup.
+        objc_setAssociatedObject(formatPopup, "savePanel", savePanel, .OBJC_ASSOCIATION_ASSIGN)
         
         savePanel.beginSheetModal(for: self.view.window!) { response in
             if response == .OK, let url = savePanel.url {
-                try? pngData.write(to: url)
+                let selectedFormat = formatPopup.selectedItem?.title ?? "PNG"
+                if selectedFormat == "SVG" {
+                    if let svgContent = self.generateSVG() {
+                        try? svgContent.write(to: url, atomically: true, encoding: .utf8)
+                    }
+                } else {
+                    if let image = self.generateImage(),
+                       let tiffData = image.tiffRepresentation,
+                       let bitmapRep = NSBitmapImageRep(data: tiffData),
+                       let pngData = bitmapRep.representation(using: .png, properties: [:]) {
+                        try? pngData.write(to: url)
+                    }
+                }
             }
         }
+    }
+    
+    @objc func exportFormatChanged(_ sender: NSPopUpButton) {
+        guard let savePanel = objc_getAssociatedObject(sender, "savePanel") as? NSSavePanel else { return }
+        let format = sender.selectedItem?.title.lowercased() ?? "png"
+        savePanel.allowedFileTypes = [format]
+        
+        // Update name field extension
+        let currentName = savePanel.nameFieldStringValue
+        let newName = (currentName as NSString).deletingPathExtension + "." + format
+        savePanel.nameFieldStringValue = newName
+    }
+    
+    private func generateSVG() -> String? {
+        guard let textStorage = textView.textStorage else { return nil }
+        
+        let fullString = textStorage.string as NSString
+        let length = fullString.length
+        
+        if length == 0 { return nil }
+        
+        // Font metrics
+        let font = textStorage.attribute(.font, at: 0, effectiveRange: nil) as? NSFont ?? NSFont.userFixedPitchFont(ofSize: 12) ?? NSFont.monospacedSystemFont(ofSize: 12, weight: .regular)
+        let ctFont = font as CTFont
+        let ascent = CTFontGetAscent(ctFont)
+        let descent = CTFontGetDescent(ctFont)
+        let leading = CTFontGetLeading(ctFont)
+        let lineHeight = ascent + descent + leading
+        
+        let padding = self.exportPadding
+        
+        // Pre-calculate dimensions to set SVG size
+        var maxWidth: CGFloat = 0
+        var lineCount: Int = 0
+        
+        fullString.enumerateSubstrings(in: NSRange(location: 0, length: length), options: .byLines) { (substring, substringRange, enclosingRange, stop) in
+            lineCount += 1
+            if let substring = substring {
+                let attrString = NSAttributedString(string: substring, attributes: [.font: font])
+                let line = CTLineCreateWithAttributedString(attrString)
+                let lineWidth = CTLineGetTypographicBounds(line, nil, nil, nil)
+                if lineWidth > maxWidth {
+                    maxWidth = lineWidth
+                }
+            }
+        }
+        
+        let width = Int(ceil(maxWidth + padding * 2))
+        let height = Int(ceil(CGFloat(lineCount) * lineHeight + padding * 2))
+        
+        let bgHex = hexString(from: ThemeManager.shared.backgroundColor)
+        let defaultColor = ThemeManager.shared.textColor
+        let defaultFillHex = hexString(from: defaultColor)
+        
+        var svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" width="\(width)" height="\(height)" viewBox="0 0 \(width) \(height)">
+        <rect width="100%" height="100%" fill="\(bgHex)"/>
+        """
+        
+        // Render lines
+        var currentLineIndex = 0
+        
+        fullString.enumerateSubstrings(in: NSRange(location: 0, length: length), options: .byLines) { (substring, substringRange, enclosingRange, stop) in
+            guard let substring = substring else {
+                currentLineIndex += 1
+                return
+            }
+            
+            // We need to preserve attributes from the original storage (e.g. colors)
+            // But we must be careful: textStorage attributes map to the original range.
+            let attrString = textStorage.attributedSubstring(from: substringRange)
+            
+            // Fallback font if not set (should be set though)
+            let lineAttrString = NSMutableAttributedString(attributedString: attrString)
+            if lineAttrString.length > 0 && lineAttrString.attribute(.font, at: 0, effectiveRange: nil) == nil {
+                lineAttrString.addAttribute(.font, value: font, range: NSRange(location: 0, length: lineAttrString.length))
+            }
+            
+            let line = CTLineCreateWithAttributedString(lineAttrString)
+            let runs = CTLineGetGlyphRuns(line) as! [CTRun]
+            
+            // Calculate Y position for the baseline of this line
+            // SVG Y starts at 0 (top).
+            // Line 0 baseline is at: padding + ascent.
+            // Line 1 baseline is at: padding + ascent + lineHeight.
+            let lineBaselineY = padding + ascent + (CGFloat(currentLineIndex) * lineHeight)
+            
+            for run in runs {
+                let attributes = CTRunGetAttributes(run) as NSDictionary
+                let runFont = attributes[kCTFontAttributeName as String] as! CTFont
+                let runCount = CTRunGetGlyphCount(run)
+                
+                // Get Color for this run
+                let runColor = (attributes[NSAttributedString.Key.foregroundColor] as? NSColor) ?? defaultColor
+                let fillHex = self.hexString(from: runColor)
+                
+                for i in 0..<runCount {
+                    let glyphRange = CFRangeMake(i, 1)
+                    var glyph = CGGlyph()
+                    var position = CGPoint()
+                    
+                    CTRunGetGlyphs(run, glyphRange, &glyph)
+                    CTRunGetPositions(run, glyphRange, &position)
+                    
+                    if let path = CTFontCreatePathForGlyph(runFont, glyph, nil) {
+                        // Transform:
+                        // 1. Flip Y (CoreText path is y-up).
+                        // 2. Translate X to (padding + position.x).
+                        // 3. Translate Y to lineBaselineY.
+                        // Note: position.y is usually 0 relative to the baseline for horizontal text,
+                        // but can be non-zero for offsets.
+                        
+                        // Matrix logic:
+                        // x' = x + (padding + position.x)
+                        // y' = -y + (lineBaselineY - position.y)
+                        // Wait, if y is flipped, -y means UP in SVG coords? No.
+                        // SVG coords: +y is DOWN.
+                        // CoreText path: +y is UP from baseline.
+                        // So a point (0, 10) in font [10 units above baseline] should be at (baselineY - 10) in SVG.
+                        // y_svg = lineBaselineY - y_font
+                        // y_svg = lineBaselineY + (-1 * y_font)
+                        // So scaling y by -1 is correct.
+                        // And translation ty should be lineBaselineY.
+                        
+                        // Let's verify position.y. Usually 0. If it's 5 (superscript), we want it 5 units higher visually.
+                        // Higher visually means SMALLER y in SVG.
+                        // y_svg = lineBaselineY - (y_font + position.y)
+                        // y_svg = lineBaselineY - position.y - y_font
+                        
+                        let finalX = padding + position.x
+                        let finalY = lineBaselineY - position.y
+                        
+                        var transform = CGAffineTransform(a: 1, b: 0, c: 0, d: -1, tx: finalX, ty: finalY)
+                        
+                        if let transformedPath = path.copy(using: &transform) {
+                            let pathData = transformedPath.svgPath
+                            if !pathData.isEmpty {
+                                svg += "<path d=\"\(pathData)\" fill=\"\(fillHex)\"/>\n"
+                            }
+                        }
+                    }
+                }
+            }
+            
+            currentLineIndex += 1
+        }
+        
+        svg += "</svg>"
+        return svg
+    }
+    
+    private func hexString(from color: NSColor) -> String {
+        guard let rgbColor = color.usingColorSpace(.sRGB) else { return "#000000" }
+        let r = Int(round(rgbColor.redComponent * 255))
+        let g = Int(round(rgbColor.greenComponent * 255))
+        let b = Int(round(rgbColor.blueComponent * 255))
+        return String(format: "#%02X%02X%02X", r, g, b)
+    }
+    
+    private func escapeXML(_ string: String) -> String {
+        return string.replacingOccurrences(of: "&", with: "&amp;")
+                     .replacingOccurrences(of: "<", with: "&lt;")
+                     .replacingOccurrences(of: ">", with: "&gt;")
+                     .replacingOccurrences(of: "\"", with: "&quot;")
+                     .replacingOccurrences(of: "'", with: "&apos;")
+    }
+}
+
+extension CGPath {
+    var svgPath: String {
+        class PathInfo {
+            var string = ""
+        }
+        
+        let info = PathInfo()
+        
+        // Ensure we use a locale that uses dot as decimal separator
+        let locale = Locale(identifier: "en_US")
+        
+        self.apply(info: UnsafeMutableRawPointer(Unmanaged.passUnretained(info).toOpaque())) { (info, elementPointer) in
+            let infoObj = Unmanaged<PathInfo>.fromOpaque(info!).takeUnretainedValue()
+            let element = elementPointer.pointee
+            let points = element.points
+            
+            // Helper for locale-aware formatting
+            func fmt(_ val: CGFloat) -> String {
+                return String(format: "%.2f", locale: Locale(identifier: "en_US"), val)
+            }
+            
+            switch element.type {
+            case .moveToPoint:
+                infoObj.string += "M\(fmt(points[0].x)),\(fmt(points[0].y)) "
+            case .addLineToPoint:
+                infoObj.string += "L\(fmt(points[0].x)),\(fmt(points[0].y)) "
+            case .addQuadCurveToPoint:
+                infoObj.string += "Q\(fmt(points[0].x)),\(fmt(points[0].y)) \(fmt(points[1].x)),\(fmt(points[1].y)) "
+            case .addCurveToPoint:
+                infoObj.string += "C\(fmt(points[0].x)),\(fmt(points[0].y)) \(fmt(points[1].x)),\(fmt(points[1].y)) \(fmt(points[2].x)),\(fmt(points[2].y)) "
+            case .closeSubpath:
+                infoObj.string += "Z "
+            @unknown default:
+                break
+            }
+        }
+        
+        return info.string.trimmingCharacters(in: .whitespaces)
     }
 }
 

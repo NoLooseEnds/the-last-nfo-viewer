@@ -5,7 +5,7 @@ import Cocoa
 class AppDelegate: NSObject, NSApplicationDelegate {
 
     var preferencesWindowController: NSWindowController?
-
+    
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         // Register defaults early
         registerDefaults()
@@ -16,12 +16,78 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         setupExportMenu()
         setupEditMenu()
         
+        // Observe preference changes to update menu
+        NotificationCenter.default.addObserver(self, selector: #selector(updateEditMenu), name: Constants.Notifications.preferencesChanged, object: nil)
+        
+        // Initial update
+        updateEditMenu()
+        
         // If no documents are open (e.g. app launched directly), show the open panel
         DispatchQueue.main.async {
             if NSDocumentController.shared.documents.isEmpty {
                 NSDocumentController.shared.openDocument(self)
             }
         }
+    }
+    
+    @objc func updateEditMenu() {
+        guard let mainMenu = NSApplication.shared.mainMenu,
+              let editMenu = mainMenu.item(withTitle: "Edit")?.submenu else { return }
+        
+        // Determine preferred format
+        let copyFormat = UserDefaults.standard.string(forKey: Constants.Defaults.copyFormat) ?? "png"
+        let isSVG = copyFormat == "svg"
+        
+        // Use spaces to try and align width. SVG is narrower than PNG, so padding SVG.
+        // "Copy as SVG " vs "Copy as PNG"
+        let primaryTitle = isSVG ? "Copy as SVG " : "Copy as PNG"
+        let alternateTitle = isSVG ? "Copy as PNG" : "Copy as SVG "
+        
+        // Find existing items or insert new ones
+        // We use a specific tag to identify our items if we want, but searching by selector is safer if we change titles.
+        // Let's rely on finding them by action or just rebuilding them.
+        // Since we insert them at index + 1 of standard Copy, let's find that again.
+        
+        let copySelector = NSSelectorFromString("copy:")
+        let copyIndex = editMenu.indexOfItem(withTarget: nil, andAction: copySelector)
+        
+        guard copyIndex >= 0 else { return }
+        
+        // Remove existing custom items (identified by their selectors)
+        // We look for copyAsImage: and copyAsAlternateImage:
+        let primarySelector = #selector(ViewController.copyAsImage(_:))
+        let alternateSelector = #selector(ViewController.copyAsAlternateImage(_:))
+        
+        // Safely remove items if they exist
+        // Note: Removing by action might remove others if we are not careful, but these are specific to us.
+        // We iterate backwards to avoid index shifting issues
+        for item in editMenu.items.reversed() {
+            if item.action == primarySelector || item.action == alternateSelector {
+                editMenu.removeItem(item)
+            }
+        }
+        
+        // Re-insert items
+        // 1. Primary Item (Cmd+Shift+C)
+        let primaryItem = NSMenuItem(title: primaryTitle, action: primarySelector, keyEquivalent: "c")
+        primaryItem.keyEquivalentModifierMask = [.command, .shift]
+        
+        // 2. Alternate Item (Cmd+Shift+Option+C) - Swaps format
+        // We use the same key equivalent "c" but with option modifier added.
+        // In Cocoa, setting isAlternate = true and same key equivalent usually works for simple modifiers (like Option).
+        // But for complex combos (Cmd+Shift+C vs Cmd+Shift+Option+C), explicit items are often clearer.
+        // To make it an "Alternate" in the menu sense (hides main, shows this when Option pressed):
+        // It must share the same key equivalent (ignoring modifiers? No, modifiers must match the alternate state).
+        // Actually, for "Alternate" menu items, they usually have the same key equivalent but different modifiers.
+        // Let's set it up explicitly.
+        
+        let alternateItem = NSMenuItem(title: alternateTitle, action: alternateSelector, keyEquivalent: "c")
+        alternateItem.keyEquivalentModifierMask = [.command, .shift, .option]
+        alternateItem.isAlternate = true
+        
+        // Insert in order: Primary then Alternate (standard order for alternates)
+        editMenu.insertItem(alternateItem, at: copyIndex + 1)
+        editMenu.insertItem(primaryItem, at: copyIndex + 1)
     }
     
     private func registerDefaults() {
@@ -31,7 +97,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             Constants.Defaults.fontSize: 14.0,
             Constants.Defaults.highlightLinks: true,
             Constants.Defaults.appearanceMode: "System",
-            Constants.Defaults.textAlignment: "Center"
+            Constants.Defaults.textAlignment: "Center",
+            Constants.Defaults.copyFormat: "png"
         ])
     }
     
@@ -136,36 +203,19 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         let targetIndex = printIndex >= 0 ? printIndex : fileMenu.numberOfItems
         
-        let exportImageTitle = NSLocalizedString("MENU_EXPORT_IMAGE", value: "Export as Image…", comment: "Menu item for Export as Image")
-        if fileMenu.item(withTitle: exportImageTitle) == nil {
-             let exportImageItem = NSMenuItem(title: exportImageTitle, action: #selector(ViewController.exportAsImage(_:)), keyEquivalent: "E")
-             exportImageItem.keyEquivalentModifierMask = [.command] // Cmd+E for Export Image? Or just standard.
-             // Standard Export is usually Cmd+Shift+E or similar. Let's leave no shortcut or use Shift+Cmd+E
-             exportImageItem.keyEquivalentModifierMask = [.command, .shift]
-             exportImageItem.keyEquivalent = "e"
+        let exportTitle = NSLocalizedString("MENU_EXPORT", value: "Export…", comment: "Menu item for Export")
+        if fileMenu.item(withTitle: exportTitle) == nil {
+             let exportItem = NSMenuItem(title: exportTitle, action: #selector(ViewController.exportFile(_:)), keyEquivalent: "E")
+             exportItem.keyEquivalentModifierMask = [.command, .shift]
+             exportItem.keyEquivalent = "e"
              
-             fileMenu.insertItem(exportImageItem, at: targetIndex)
+             fileMenu.insertItem(exportItem, at: targetIndex)
         }
     }
     
     private func setupEditMenu() {
-        guard let mainMenu = NSApplication.shared.mainMenu,
-              let editMenu = mainMenu.item(withTitle: "Edit")?.submenu else { return }
-        
-        // Find "Copy" item
-        let copySelector = NSSelectorFromString("copy:")
-        let index = editMenu.indexOfItem(withTarget: nil, andAction: copySelector)
-        
-        if index >= 0 {
-             let copyImageTitle = NSLocalizedString("MENU_COPY_IMAGE", value: "Copy as Image", comment: "Menu item for Copy as Image")
-             // Check if already exists
-             if editMenu.item(withTitle: copyImageTitle) == nil {
-                 let copyImageItem = NSMenuItem(title: copyImageTitle, action: #selector(ViewController.copyAsImage(_:)), keyEquivalent: "C")
-                 copyImageItem.keyEquivalentModifierMask = [.command, .shift]
-                 
-                 editMenu.insertItem(copyImageItem, at: index + 1)
-             }
-        }
+        // Initial setup handled by updateEditMenu
+        updateEditMenu()
     }
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {

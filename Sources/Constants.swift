@@ -7,6 +7,7 @@ struct Constants {
         static let highlightLinks = "highlightLinks"
         static let appearanceMode = "appearanceMode"
         static let textAlignment = "textAlignment"
+        static let copyFormat = "copyFormat"
         
         static let textColor = "textColor"
         static let backgroundColor = "backgroundColor"
