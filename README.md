@@ -8,7 +8,7 @@ This project has been inspired by [Yet Another NFO Viewer](https://github.com/ma
 ## Features
 
 - **Native macOS Experience**: Rewritten completely in Swift for modern macOS versions and Apple Silicon.
-- **QuickLook Plugin**: Preview NFO files directly in Finder (Spacebar preview) without opening the app.
+- **QuickLook Plugin**: Preview NFO files directly in Finder (Spacebar preview) without opening the app (please see [Quicklook Limitations](#quicklook-limitations) for more info).
 - **Hyperlinks**: Automatically detects and highlights URLs in NFO files.
 - **Image Export**: Export or copy the rendered NFO as a high-quality PNG image or vector SVG (`Cmd+Shift+E` / `Cmd+Shift+C`).
 - **Theme Support**: 
