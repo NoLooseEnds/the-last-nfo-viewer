@@ -2,6 +2,9 @@ import Cocoa
 
 class ThemeManager {
     static let shared = ThemeManager()
+    private static let distributedPreferencesChanged = Notification.Name(
+        "com.nle.TheLastNFOViewer.preferencesChanged"
+    )
     
     private init() {}
     
@@ -49,14 +52,15 @@ class ThemeManager {
     }
     
     func setAppearanceMode(_ mode: String) {
+        guard defaults.string(forKey: Constants.Defaults.appearanceMode) != mode else { return }
+
         defaults.set(mode, forKey: Constants.Defaults.appearanceMode)
         
-        // Reset custom colors to defaults when mode changes
-        // This prevents "Black text on Black background" scenarios when switching modes
+        // Avoid invalid combinations such as black text on a black background.
         defaults.removeObject(forKey: Constants.Defaults.textColor)
         defaults.removeObject(forKey: Constants.Defaults.backgroundColor)
-        
-        notifyPreferencesChanged()
+
+        notifyPreferencesChanged([.appearance])
     }
     
     func toggleDarkMode() {
@@ -78,28 +82,28 @@ class ThemeManager {
     // MARK: - Font Management
     
     func increaseFontSize() {
-        var size = defaults.double(forKey: Constants.Defaults.fontSize)
-        if size == 0 { size = 14.0 }
-        size += 1.0
-        if size > 72.0 { size = 72.0 }
+        let currentSize = Constants.FontSize.normalized(
+            defaults.double(forKey: Constants.Defaults.fontSize)
+        )
+        let size = min(currentSize + 1.0, Constants.FontSize.maximum)
         
         defaults.set(size, forKey: Constants.Defaults.fontSize)
-        notifyPreferencesChanged()
+        notifyPreferencesChanged([.contentMetrics])
     }
     
     func decreaseFontSize() {
-        var size = defaults.double(forKey: Constants.Defaults.fontSize)
-        if size == 0 { size = 14.0 }
-        size -= 1.0
-        if size < 8.0 { size = 8.0 }
+        let currentSize = Constants.FontSize.normalized(
+            defaults.double(forKey: Constants.Defaults.fontSize)
+        )
+        let size = max(currentSize - 1.0, Constants.FontSize.minimum)
         
         defaults.set(size, forKey: Constants.Defaults.fontSize)
-        notifyPreferencesChanged()
+        notifyPreferencesChanged([.contentMetrics])
     }
     
     func resetFontSize() {
-        defaults.set(14.0, forKey: Constants.Defaults.fontSize)
-        notifyPreferencesChanged()
+        defaults.set(Constants.FontSize.defaultValue, forKey: Constants.Defaults.fontSize)
+        notifyPreferencesChanged([.contentMetrics])
     }
     
     // MARK: - Shared Config (Workaround for App Groups)
@@ -114,13 +118,20 @@ class ThemeManager {
     private func exportSharedConfig() {
         let config: [String: Any] = [
             "fontName": defaults.string(forKey: Constants.Defaults.fontName) ?? "More Perfect DOS VGA",
-            "fontSize": defaults.double(forKey: Constants.Defaults.fontSize),
+            "fontSize": Constants.FontSize.normalized(
+                defaults.double(forKey: Constants.Defaults.fontSize)
+            ),
             "appearanceMode": defaults.string(forKey: Constants.Defaults.appearanceMode) ?? "System",
+            "textAlignment": defaults.string(forKey: Constants.Defaults.textAlignment) ?? "Center",
             "highlightLinks": defaults.bool(forKey: Constants.Defaults.highlightLinks),
             "textColor": hexString(from: textColor),
             "backgroundColor": hexString(from: backgroundColor),
             "linkColor": hexString(from: linkColor),
-            "selectionColor": hexString(from: selectionColor)
+            "selectionColor": hexString(from: selectionColor),
+            "hasCustomTextColor": defaults.object(forKey: Constants.Defaults.textColor) != nil,
+            "hasCustomBackgroundColor": defaults.object(forKey: Constants.Defaults.backgroundColor) != nil,
+            "hasCustomLinkColor": defaults.object(forKey: Constants.Defaults.linkColor) != nil,
+            "hasCustomSelectionColor": defaults.object(forKey: Constants.Defaults.selectionColor) != nil
         ]
         
         guard let home = getRealHomeDirectory() else { return }
@@ -128,7 +139,11 @@ class ThemeManager {
         
         do {
             let data = try JSONSerialization.data(withJSONObject: config, options: .prettyPrinted)
-            try data.write(to: url)
+            try data.write(to: url, options: .atomic)
+            DistributedNotificationCenter.default.post(
+                name: Self.distributedPreferencesChanged,
+                object: nil
+            )
         } catch {
             print("Failed to write shared config: \(error)")
         }
@@ -142,10 +157,21 @@ class ThemeManager {
         return String(format: "#%02X%02X%02X", r, g, b)
     }
     
-    // Call this whenever preferences change
-    func notifyPreferencesChanged() {
+    func notifyPreferencesChanged(_ changes: Set<PreferenceChange>) {
+        guard !changes.isEmpty else { return }
+
+        if !changes.isDisjoint(with: [.appearance, .contentMetrics, .contentPresentation]) {
+            exportSharedConfig()
+        }
+        NotificationCenter.default.post(
+            name: Constants.Notifications.preferencesChanged,
+            object: nil,
+            userInfo: PreferenceChange.userInfo(for: changes)
+        )
+    }
+
+    func synchronizeSharedConfig() {
         exportSharedConfig()
-        NotificationCenter.default.post(name: Constants.Notifications.preferencesChanged, object: nil)
     }
     
     // MARK: - Color Resolution
@@ -182,4 +208,3 @@ class ThemeManager {
         return .selectedTextBackgroundColor
     }
 }
-

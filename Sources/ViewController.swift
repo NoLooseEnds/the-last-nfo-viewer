@@ -4,7 +4,6 @@ import CoreText
 
 class ViewController: NSViewController {
     
-    // Optimized: Reusable detector to avoid expensive recreation
     private static let linkDetector: NSDataDetector? = {
         try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
     }()
@@ -17,7 +16,10 @@ class ViewController: NSViewController {
     
     private var textView: NSTextView!
     private var cachedContentWidth: CGFloat = 0
+    private var cachedContentHeight: CGFloat = 0
+    private var textRenderGeneration: UInt = 0
     private let exportPadding: CGFloat = 20.0
+    private weak var activeSavePanel: NSSavePanel?
     
     override func loadView() {
         let scrollView = ThemeAwareScrollView()
@@ -30,7 +32,6 @@ class ViewController: NSViewController {
         scrollView.autohidesScrollers = true
         scrollView.borderType = .noBorder
         
-        // Initial size
         let contentSize = NSSize(width: 800, height: 600)
         scrollView.frame = NSRect(origin: .zero, size: contentSize)
         
@@ -38,36 +39,13 @@ class ViewController: NSViewController {
         textView.minSize = NSSize(width: 0, height: contentSize.height)
         textView.maxSize = NSSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
         textView.isVerticallyResizable = true
-        textView.isHorizontallyResizable = true // Ensure it can grow wide
+        textView.isHorizontallyResizable = true
         textView.autoresizingMask = [.width, .height]
-        
-        // NFO viewing settings: no wrapping
-        // CRITICAL: Set widthTracksTextView to true if we want to fill space, 
-        // but false if we want horizontal scroll.
-        // If we want centering, we usually need widthTracksTextView = false so container is just content size?
-        // No, for centering logic above (using insets), we typically have widthTracksTextView = true 
-        // so the text view fills the scroll view, and we use insets to push text to center.
-        // BUT, for NFOs that are WIDER than window, we MUST have horizontal scroll.
-        // If widthTracksTextView = true, text wraps (unless line break mode is char wrap? no).
-        // To enable horizontal scrolling for non-wrapping text, widthTracksTextView usually must be false
-        // OR the container size must be huge.
-        // 
-        // Let's fix the horizontal scrollbar issue:
-        // "there is always a horisontal scrollbar" -> This means content size > view size always?
-        // Or container size is huge.
-        //
-        // If we use "widthTracksTextView = true", we lose horizontal scrolling if text is wider than view 
-        // (it just clips or wraps).
-        // If we use "widthTracksTextView = false" (current), the text container size is huge (greatestFiniteMagnitude).
-        // This causes the horizontal scrollbar to appear because the document view is huge.
-        //
-        // FIX: We need to resize the TextContainer to fit the content width exactly (plus padding), 
-        // but ensure it's at least the ScrollView width (for background color filling).
         
         textView.textContainer?.widthTracksTextView = false
         textView.textContainer?.containerSize = NSSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
-        textView.textContainer?.lineFragmentPadding = 0 // Remove extra padding to simplify width calculations
-        textView.textContainer?.lineBreakMode = .byClipping // Prevent wrapping
+        textView.textContainer?.lineFragmentPadding = 0
+        textView.textContainer?.lineBreakMode = .byClipping
         
         textView.backgroundColor = .white
         textView.textColor = .black
@@ -82,9 +60,13 @@ class ViewController: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Listen for theme changes
         NotificationCenter.default.addObserver(self, selector: #selector(applyTheme), name: Constants.Notifications.themeChanged, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(applyTheme), name: Constants.Notifications.preferencesChanged, object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(preferencesDidChange(_:)),
+            name: Constants.Notifications.preferencesChanged,
+            object: nil
+        )
         
         applyTheme()
         updateText()
@@ -92,14 +74,11 @@ class ViewController: NSViewController {
     
     override func viewDidAppear() {
         super.viewDidAppear()
-        // Ensure theme is applied to window now that it exists
         applyTheme()
     }
     
     @objc private func applyTheme() {
-        // Apply appearance to window
-        let targetWindow = view.window ?? NSApp.windows.first
-        ThemeManager.shared.applyAppearance(to: targetWindow)
+        ThemeManager.shared.applyAppearance(to: view.window)
         
         // Update TextView colors from Manager
         textView.backgroundColor = ThemeManager.shared.backgroundColor
@@ -107,6 +86,15 @@ class ViewController: NSViewController {
         
         // Re-render text to apply correct color attributes
         updateText()
+    }
+
+    @objc private func preferencesDidChange(_ notification: Notification) {
+        let changes = PreferenceChange.changes(from: notification)
+        if changes.contains(.appearance) {
+            applyTheme()
+        } else if changes.contains(.contentMetrics) || changes.contains(.contentPresentation) {
+            updateText()
+        }
     }
     
     // Called when system appearance changes
@@ -116,29 +104,17 @@ class ViewController: NSViewController {
         }
     }
     
-    @objc func toggleDarkMode() {
-        ThemeManager.shared.toggleDarkMode()
-    }
-    
-    @objc func increaseFontSize() {
-        ThemeManager.shared.increaseFontSize()
-    }
-    
-    @objc func decreaseFontSize() {
-        ThemeManager.shared.decreaseFontSize()
-    }
-    
-    @objc func resetFontSize() {
-        ThemeManager.shared.resetFontSize()
-    }
-    
     private func updateText() {
         guard let textView = textView else { return }
+        textRenderGeneration &+= 1
+        let renderGeneration = textRenderGeneration
         let defaults = UserDefaults.standard
         
         // Font setup
         let fontName = defaults.string(forKey: Constants.Defaults.fontName) ?? "More Perfect DOS VGA"
-        let fontSize = defaults.double(forKey: Constants.Defaults.fontSize) > 0 ? defaults.double(forKey: Constants.Defaults.fontSize) : 14.0
+        let fontSize = Constants.FontSize.normalized(
+            defaults.double(forKey: Constants.Defaults.fontSize)
+        )
         
         let font = NSFont(name: fontName, size: fontSize) ?? NSFont.monospacedSystemFont(ofSize: fontSize, weight: .regular)
         
@@ -167,16 +143,19 @@ class ViewController: NSViewController {
         
         // Link detection (async)
         if defaults.bool(forKey: Constants.Defaults.highlightLinks) {
-            DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-                guard let self = self else { return }
+            DispatchQueue.global(qos: .userInitiated).async {
                 guard let detector = ViewController.linkDetector else { return }
                 
                 let matches = detector.matches(in: content, options: [], range: fullRange)
                 
                 if !matches.isEmpty {
-                    DispatchQueue.main.async {
-                        // Check if content has changed while we were processing
-                        guard self.textContent == content else { return }
+                    DispatchQueue.main.async { [weak self] in
+                        guard let self,
+                              self.textRenderGeneration == renderGeneration,
+                              self.textContent == content,
+                              UserDefaults.standard.bool(forKey: Constants.Defaults.highlightLinks) else {
+                            return
+                        }
                         
                         if let textStorage = self.textView.textStorage {
                             textStorage.beginEditing()
@@ -199,17 +178,12 @@ class ViewController: NSViewController {
         // Preserve scroll position
         let visibleRect = textView.visibleRect
         
-        // Measure content width with unconstrained container
-        if let layoutManager = textView.layoutManager, let textContainer = textView.textContainer {
-            // Temporarily ensure container is huge to get true unwrapped width
-            // We must set widthTracksTextView to false to allow manual resizing
-            textContainer.widthTracksTextView = false
-            let oldSize = textContainer.containerSize
-            textContainer.containerSize = NSSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
-            layoutManager.ensureLayout(for: textContainer)
-            cachedContentWidth = layoutManager.usedRect(for: textContainer).width
-            // We will restore/adjust size in centerContent
-        }
+        // Measure independently of the text container's current alignment/layout state.
+        // NSLayoutManager.usedRect can report the artificial maximum container width
+        // after a right-aligned view is rendered a second time.
+        let measuredSize = attributedString.size()
+        cachedContentWidth = measuredSize.width
+        cachedContentHeight = measuredSize.height
         
         // Update centering
         centerContent()
@@ -226,69 +200,36 @@ class ViewController: NSViewController {
         guard let textContainer = textView.textContainer,
               let scrollView = self.view as? NSScrollView else { return }
         
-        // Use cached content width to avoid layout dependency loops
-        let contentWidth = cachedContentWidth
-        
         let availableWidth = scrollView.contentSize.width
-        let minPadding: CGFloat = 20.0
-        let totalMinPadding = minPadding * 2
+        let alignment: NFOTextAlignment
+        switch UserDefaults.standard.string(forKey: Constants.Defaults.textAlignment) ?? "Center" {
+        case "Left": alignment = .left
+        case "Right": alignment = .right
+        default: alignment = .center
+        }
+        let layout = NFOLayoutPolicy.contentLayout(
+            contentWidth: cachedContentWidth,
+            availableWidth: availableWidth,
+            alignment: alignment
+        )
+
+        textView.isHorizontallyResizable = layout.scrollsHorizontally
+        textView.autoresizingMask = layout.scrollsHorizontally ? [.height] : [.width, .height]
+        textContainer.widthTracksTextView = layout.widthTracksTextView
         
-        let align = UserDefaults.standard.string(forKey: Constants.Defaults.textAlignment) ?? "Center"
-        
-        var insetWidth: CGFloat = minPadding
-        var targetContainerWidth: CGFloat = 0
-        
-        // Logic:
-        // We want the text container to be at least (content + padding).
-        // If window is wider, we extend the container to window width and use insets to align.
-        
-        let requiredContentWidth = contentWidth + totalMinPadding
-        
-        if availableWidth > requiredContentWidth {
-            // Window is wider than content -> Center/Align
-            
-            // Enable autoresizing for width so it tracks window resize (and vertical scrollbar appearance)
-            textView.autoresizingMask = [.width, .height]
-            textContainer.widthTracksTextView = true
-            
-            targetContainerWidth = availableWidth
-            
-            if align == "Center" || align == "Right" {
-                // Center logic (Right aligned handled as center for now)
-                insetWidth = floor((availableWidth - contentWidth) / 2)
-            } else {
-                // Left
-                insetWidth = minPadding
-            }
-        } else {
-            // Content is wider -> Scroll
-            
-            // Disable autoresizing to prevent wrapping/reflow and allow horizontal scrolling
-            textView.autoresizingMask = [.height]
-            textContainer.widthTracksTextView = false
-            
-            targetContainerWidth = requiredContentWidth
-            insetWidth = minPadding
+        if textView.textContainerInset.width != layout.horizontalInset {
+            textView.textContainerInset = NSSize(width: layout.horizontalInset, height: 0)
         }
         
-        // Apply updates
-        if textView.textContainerInset.width != insetWidth {
-            textView.textContainerInset = NSSize(width: insetWidth, height: 0)
-        }
-        
-        // When widthTracksTextView is true, setting containerSize.width is ignored/overwritten by textView width,
-        // but we set it for the 'else' case.
-        if !textContainer.widthTracksTextView {
+        if let targetContainerWidth = layout.textContainerWidth,
+           !textContainer.widthTracksTextView {
             if textContainer.containerSize.width != targetContainerWidth {
                 textContainer.containerSize = NSSize(width: targetContainerWidth, height: CGFloat.greatestFiniteMagnitude)
             }
         }
         
-        // Update frame size
-        // If autoresizing is ON, this sets the initial size and then system maintains it.
-        // If autoresizing is OFF, this sets the fixed size.
-        if textView.frame.width != targetContainerWidth {
-             textView.setFrameSize(NSSize(width: targetContainerWidth, height: textView.frame.height))
+        if textView.frame.width != layout.textViewWidth {
+            textView.setFrameSize(NSSize(width: layout.textViewWidth, height: textView.frame.height))
         }
         
         // Force display to ensure visual update
@@ -297,16 +238,21 @@ class ViewController: NSViewController {
     
     // Calculate ideal content width based on current text and font
     func calculateIdealContentWidth() -> CGFloat {
-        // Return cached width + padding
-        return cachedContentWidth + 60 // 20+20 padding + 20 extra safety
+        return calculateIdealContentSize().width
+    }
+
+    func calculateIdealContentSize() -> NSSize {
+        return NSSize(
+            width: cachedContentWidth + NFOLayoutPolicy.horizontalWindowPadding,
+            height: cachedContentHeight + NFOLayoutPolicy.verticalWindowPadding
+        )
     }
     
     // MARK: - Image Export
     
     func generateImage() -> NSImage? {
         guard let layoutManager = textView.layoutManager,
-              let textContainer = textView.textContainer,
-              let textStorage = textView.textStorage else { return nil }
+              let textContainer = textView.textContainer else { return nil }
         
         // 1. Calculate the bounding rect of all text
         // Ensure layout is up to date
@@ -362,13 +308,13 @@ class ViewController: NSViewController {
             let pasteboard = NSPasteboard.general
             pasteboard.clearContents()
             pasteboard.setString(svgContent, forType: .string)
-            showNotificationPopup(text: "Copied as SVG")
+            showNotificationPopup(text: NSLocalizedString("COPY_AS_SVG_CONFIRMATION", value: "Copied as SVG", comment: "Confirmation shown after copying SVG"))
         } else {
             guard let image = generateImage() else { return }
             let pasteboard = NSPasteboard.general
             pasteboard.clearContents()
             pasteboard.writeObjects([image])
-            showNotificationPopup(text: "Copied as PNG")
+            showNotificationPopup(text: NSLocalizedString("COPY_AS_PNG_CONFIRMATION", value: "Copied as PNG", comment: "Confirmation shown after copying PNG"))
         }
     }
     
@@ -420,12 +366,12 @@ class ViewController: NSViewController {
     @objc func exportFile(_ sender: Any?) {
         let savePanel = NSSavePanel()
         
-        // Setup accessory view for format selection
         let accessoryView = NSView(frame: NSRect(x: 0, y: 0, width: 200, height: 40))
         let formatPopup = NSPopUpButton(frame: NSRect(x: 60, y: 10, width: 100, height: 24))
         formatPopup.addItems(withTitles: ["PNG", "SVG"])
         
-        let label = NSTextField(labelWithString: "Format:")
+        let formatLabel = NSLocalizedString("EXPORT_FORMAT_LABEL", value: "Format:", comment: "Label for the export format selector")
+        let label = NSTextField(labelWithString: formatLabel)
         label.frame = NSRect(x: 0, y: 12, width: 55, height: 20)
         label.alignment = .right
         
@@ -436,63 +382,76 @@ class ViewController: NSViewController {
         savePanel.canCreateDirectories = true
         savePanel.isExtensionHidden = false
         
-        // Set initial state
         let copyFormat = UserDefaults.standard.string(forKey: Constants.Defaults.copyFormat) ?? "png"
         if copyFormat == "svg" {
             formatPopup.selectItem(withTitle: "SVG")
-            savePanel.allowedFileTypes = ["svg"]
+            savePanel.allowedContentTypes = [.svg]
         } else {
             formatPopup.selectItem(withTitle: "PNG")
-            savePanel.allowedFileTypes = ["png"]
+            savePanel.allowedContentTypes = [.png]
         }
         
         savePanel.nameFieldStringValue = (self.view.window?.title ?? "Export")
         
-        // Handle format change in save panel
-        // Note: NSSavePanel doesn't easily support dynamic extension changes via accessory view events in a simple way
-        // without subclassing or delegate. But we can simply rely on the user checking the dropdown.
-        // Actually, updating the allowedFileTypes while the panel is open is tricky.
-        // A simpler approach for the user: Just have the dropdown set the extension?
-        // Let's attach an action to the popup to update the allowed types and name field.
-        
         formatPopup.target = self
         formatPopup.action = #selector(exportFormatChanged(_:))
-        // We need to store reference to savePanel to update it, but we can't easily pass it.
-        // Helper object? Or just use associated object / tag?
-        // Let's use a simpler approach: "Export as..." with a format selector.
-        
-        // Actually, standard macOS apps often put the format selector in the accessory view and update the panel.
-        // Let's try to update the panel from the action. We can associate the panel with the popup.
-        objc_setAssociatedObject(formatPopup, "savePanel", savePanel, .OBJC_ASSOCIATION_ASSIGN)
-        
-        savePanel.beginSheetModal(for: self.view.window!) { response in
+        guard let window = self.view.window else { return }
+        activeSavePanel = savePanel
+        savePanel.beginSheetModal(for: window) { [weak self] response in
+            guard let self else { return }
+            defer { self.activeSavePanel = nil }
+
             if response == .OK, let url = savePanel.url {
                 let selectedFormat = formatPopup.selectedItem?.title ?? "PNG"
-                if selectedFormat == "SVG" {
-                    if let svgContent = self.generateSVG() {
-                        try? svgContent.write(to: url, atomically: true, encoding: .utf8)
-                    }
-                } else {
-                    if let image = self.generateImage(),
-                       let tiffData = image.tiffRepresentation,
-                       let bitmapRep = NSBitmapImageRep(data: tiffData),
-                       let pngData = bitmapRep.representation(using: .png, properties: [:]) {
-                        try? pngData.write(to: url)
-                    }
+                do {
+                    try self.writeExport(to: url, asSVG: selectedFormat == "SVG")
+                } catch {
+                    self.presentExportError(error)
                 }
             }
         }
     }
     
     @objc func exportFormatChanged(_ sender: NSPopUpButton) {
-        guard let savePanel = objc_getAssociatedObject(sender, "savePanel") as? NSSavePanel else { return }
+        guard let savePanel = activeSavePanel else { return }
         let format = sender.selectedItem?.title.lowercased() ?? "png"
-        savePanel.allowedFileTypes = [format]
+        savePanel.allowedContentTypes = format == "svg" ? [.svg] : [.png]
         
-        // Update name field extension
         let currentName = savePanel.nameFieldStringValue
         let newName = (currentName as NSString).deletingPathExtension + "." + format
         savePanel.nameFieldStringValue = newName
+    }
+
+    private func writeExport(to url: URL, asSVG: Bool) throws {
+        if asSVG {
+            guard let svgContent = generateSVG() else {
+                throw ExportError.couldNotCreateContent
+            }
+            try svgContent.write(to: url, atomically: true, encoding: .utf8)
+            return
+        }
+
+        guard let image = generateImage(),
+              let tiffData = image.tiffRepresentation,
+              let bitmapRep = NSBitmapImageRep(data: tiffData),
+              let pngData = bitmapRep.representation(using: .png, properties: [:]) else {
+            throw ExportError.couldNotCreateContent
+        }
+        try pngData.write(to: url)
+    }
+
+    private func presentExportError(_ error: Error) {
+        let alert = NSAlert()
+        alert.alertStyle = .warning
+        alert.messageText = NSLocalizedString("EXPORT_FAILED_TITLE", value: "Export Failed", comment: "Title shown when an image export cannot be saved")
+        let messageFormat = NSLocalizedString("EXPORT_FAILED_MESSAGE", value: "The file could not be saved. %@", comment: "Export failure message followed by the system error")
+        alert.informativeText = String(format: messageFormat, error.localizedDescription)
+
+        if let window = view.window {
+            alert.beginSheetModal(for: window)
+        } else {
+            alert.runModal()
+        }
     }
     
     private func generateSVG() -> String? {
@@ -503,7 +462,6 @@ class ViewController: NSViewController {
         
         if length == 0 { return nil }
         
-        // Font metrics
         let font = textStorage.attribute(.font, at: 0, effectiveRange: nil) as? NSFont ?? NSFont.userFixedPitchFont(ofSize: 12) ?? NSFont.monospacedSystemFont(ofSize: 12, weight: .regular)
         let ctFont = font as CTFont
         let ascent = CTFontGetAscent(ctFont)
@@ -513,7 +471,6 @@ class ViewController: NSViewController {
         
         let padding = self.exportPadding
         
-        // Pre-calculate dimensions to set SVG size
         var maxWidth: CGFloat = 0
         var lineCount: Int = 0
         
@@ -534,27 +491,22 @@ class ViewController: NSViewController {
         
         let bgHex = hexString(from: ThemeManager.shared.backgroundColor)
         let defaultColor = ThemeManager.shared.textColor
-        let defaultFillHex = hexString(from: defaultColor)
         
         var svg = """
         <svg xmlns="http://www.w3.org/2000/svg" width="\(width)" height="\(height)" viewBox="0 0 \(width) \(height)">
         <rect width="100%" height="100%" fill="\(bgHex)"/>
         """
         
-        // Render lines
         var currentLineIndex = 0
         
         fullString.enumerateSubstrings(in: NSRange(location: 0, length: length), options: .byLines) { (substring, substringRange, enclosingRange, stop) in
-            guard let substring = substring else {
+            guard substring != nil else {
                 currentLineIndex += 1
                 return
             }
             
-            // We need to preserve attributes from the original storage (e.g. colors)
-            // But we must be careful: textStorage attributes map to the original range.
             let attrString = textStorage.attributedSubstring(from: substringRange)
             
-            // Fallback font if not set (should be set though)
             let lineAttrString = NSMutableAttributedString(attributedString: attrString)
             if lineAttrString.length > 0 && lineAttrString.attribute(.font, at: 0, effectiveRange: nil) == nil {
                 lineAttrString.addAttribute(.font, value: font, range: NSRange(location: 0, length: lineAttrString.length))
@@ -563,10 +515,6 @@ class ViewController: NSViewController {
             let line = CTLineCreateWithAttributedString(lineAttrString)
             let runs = CTLineGetGlyphRuns(line) as! [CTRun]
             
-            // Calculate Y position for the baseline of this line
-            // SVG Y starts at 0 (top).
-            // Line 0 baseline is at: padding + ascent.
-            // Line 1 baseline is at: padding + ascent + lineHeight.
             let lineBaselineY = padding + ascent + (CGFloat(currentLineIndex) * lineHeight)
             
             for run in runs {
@@ -574,7 +522,6 @@ class ViewController: NSViewController {
                 let runFont = attributes[kCTFontAttributeName as String] as! CTFont
                 let runCount = CTRunGetGlyphCount(run)
                 
-                // Get Color for this run
                 let runColor = (attributes[NSAttributedString.Key.foregroundColor] as? NSColor) ?? defaultColor
                 let fillHex = self.hexString(from: runColor)
                 
@@ -587,30 +534,6 @@ class ViewController: NSViewController {
                     CTRunGetPositions(run, glyphRange, &position)
                     
                     if let path = CTFontCreatePathForGlyph(runFont, glyph, nil) {
-                        // Transform:
-                        // 1. Flip Y (CoreText path is y-up).
-                        // 2. Translate X to (padding + position.x).
-                        // 3. Translate Y to lineBaselineY.
-                        // Note: position.y is usually 0 relative to the baseline for horizontal text,
-                        // but can be non-zero for offsets.
-                        
-                        // Matrix logic:
-                        // x' = x + (padding + position.x)
-                        // y' = -y + (lineBaselineY - position.y)
-                        // Wait, if y is flipped, -y means UP in SVG coords? No.
-                        // SVG coords: +y is DOWN.
-                        // CoreText path: +y is UP from baseline.
-                        // So a point (0, 10) in font [10 units above baseline] should be at (baselineY - 10) in SVG.
-                        // y_svg = lineBaselineY - y_font
-                        // y_svg = lineBaselineY + (-1 * y_font)
-                        // So scaling y by -1 is correct.
-                        // And translation ty should be lineBaselineY.
-                        
-                        // Let's verify position.y. Usually 0. If it's 5 (superscript), we want it 5 units higher visually.
-                        // Higher visually means SMALLER y in SVG.
-                        // y_svg = lineBaselineY - (y_font + position.y)
-                        // y_svg = lineBaselineY - position.y - y_font
-                        
                         let finalX = padding + position.x
                         let finalY = lineBaselineY - position.y
                         
@@ -641,12 +564,13 @@ class ViewController: NSViewController {
         return String(format: "#%02X%02X%02X", r, g, b)
     }
     
-    private func escapeXML(_ string: String) -> String {
-        return string.replacingOccurrences(of: "&", with: "&amp;")
-                     .replacingOccurrences(of: "<", with: "&lt;")
-                     .replacingOccurrences(of: ">", with: "&gt;")
-                     .replacingOccurrences(of: "\"", with: "&quot;")
-                     .replacingOccurrences(of: "'", with: "&apos;")
+}
+
+private enum ExportError: LocalizedError {
+    case couldNotCreateContent
+
+    var errorDescription: String? {
+        return NSLocalizedString("EXPORT_CONTENT_ERROR", value: "The image data could not be created.", comment: "Reason shown when PNG or SVG generation fails")
     }
 }
 
@@ -657,9 +581,6 @@ extension CGPath {
         }
         
         let info = PathInfo()
-        
-        // Ensure we use a locale that uses dot as decimal separator
-        let locale = Locale(identifier: "en_US")
         
         self.apply(info: UnsafeMutableRawPointer(Unmanaged.passUnretained(info).toOpaque())) { (info, elementPointer) in
             let infoObj = Unmanaged<PathInfo>.fromOpaque(info!).takeUnretainedValue()
@@ -690,4 +611,3 @@ extension CGPath {
         return info.string.trimmingCharacters(in: .whitespaces)
     }
 }
-

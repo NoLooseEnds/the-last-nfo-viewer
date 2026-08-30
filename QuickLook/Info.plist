@@ -17,11 +17,11 @@
 	<key>CFBundlePackageType</key>
 	<string>XPC!</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0.2</string>
+	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
-	<string>3</string>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>ATSApplicationFontsPath</key>
-	<string>.</string>
+	<string>Fonts</string>
 	<key>NSExtension</key>
 	<dict>
 		<key>NSExtensionAttributes</key>
@@ -42,4 +42,3 @@
 	</dict>
 </dict>
 </plist>
-

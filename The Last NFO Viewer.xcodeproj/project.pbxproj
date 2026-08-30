@@ -11,9 +11,6 @@
 		DEADBEEF0000000C /* PreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEADBEEF00000002 /* PreviewViewController.swift */; };
 		DEADBEEF0000000D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		DEADBEEF0000000E /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DEADBEEF00000010 /* Quartz.framework */; };
-		DEADBEEF0000000F /* More Perfect DOS VGA.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D750355F249E68AE0004739B /* More Perfect DOS VGA.ttf */; };
-		DEADBEEF000000F1 /* FiraCodeNerdFontMono-Retina.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DEADBEEF000000F0 /* FiraCodeNerdFontMono-Retina.ttf */; };
-		DEADBEEF000000F3 /* JetBrainsMono-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DEADBEEF000000F2 /* JetBrainsMono-Regular.ttf */; };
 		DEADBEEF00000011 /* NFO Preview.appex in Embed QuickLook Plugin */ = {isa = PBXBuildFile; fileRef = DEADBEEF00000003 /* NFO Preview.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		74AE4DE09382D285BFE11C4F /* Px437_IBM_PS2thin1.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = A3E00DE466994BFEB753DBA7 /* Px437_IBM_PS2thin1.ttf */; };
 		351DF4F4AC1DB03F26B5A7E2 /* Px437_IBM_PS2thin3.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = ADE032F485E89BFFF6AC59D7 /* Px437_IBM_PS2thin3.ttf */; };
@@ -48,6 +45,11 @@
 		BD2059377C034511826341F0 /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C25A04A84D45EC9124075A /* Document.swift */; };
 		3377FBF7CCA0418AAACE77EC /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF12DB8ACE14464FAB57F6FF /* ViewController.swift */; };
 		D4E5F60718293A4B5CA1B2C3 /* PreferencesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B5C /* PreferencesViewController.swift */; };
+		FEEDFACE0000000000000001 /* NFOContentDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDFACE0000000000000011 /* NFOContentDecoder.swift */; };
+		FEEDFACE0000000000000002 /* NFOContentDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDFACE0000000000000011 /* NFOContentDecoder.swift */; };
+		FEEDFACE0000000000000003 /* NFOLayoutPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDFACE0000000000000012 /* NFOLayoutPolicy.swift */; };
+		FEEDFACE0000000000000004 /* NFOLayoutPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDFACE0000000000000012 /* NFOLayoutPolicy.swift */; };
+		FEEDFACE0000000000000005 /* Fonts in Resources */ = {isa = PBXBuildFile; fileRef = FEEDFACE0000000000000013 /* Fonts */; };
 		1DDD58160DA1D0A300B32029 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1DDD58140DA1D0A300B32029 /* MainMenu.xib */; };
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
@@ -168,6 +170,9 @@
 		92C25A04A84D45EC9124075A /* Document.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sources/Document.swift; sourceTree = "<group>"; };
 		BF12DB8ACE14464FAB57F6FF /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sources/ViewController.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F60718293A4B5C /* PreferencesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sources/PreferencesViewController.swift; sourceTree = "<group>"; };
+		FEEDFACE0000000000000011 /* NFOContentDecoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sources/NFOContentDecoder.swift; sourceTree = "<group>"; };
+		FEEDFACE0000000000000012 /* NFOLayoutPolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sources/NFOLayoutPolicy.swift; sourceTree = "<group>"; };
+		FEEDFACE0000000000000013 /* Fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Fonts; path = ../Resources/Fonts; sourceTree = "<group>"; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		256AC3D90F4B6AC300CF3369 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sources/AppDelegate.swift; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; explicitFileType = text.plist.xml; fileEncoding = 4; path = Info.plist; sourceTree = "<group>"; };
@@ -211,6 +216,7 @@
 				DEADBEEF00000030 /* NFO Preview.entitlements */,
 				DEADBEEF00000001 /* Info.plist */,
 				DEADBEEF00000002 /* PreviewViewController.swift */,
+				FEEDFACE0000000000000013 /* Fonts */,
 			);
 			path = QuickLook;
 			sourceTree = "<group>";
@@ -224,6 +230,8 @@
 				92C25A04A84D45EC9124075A /* Document.swift */,
 				BF12DB8ACE14464FAB57F6FF /* ViewController.swift */,
 				A1B2C3D4E5F60718293A4B5C /* PreferencesViewController.swift */,
+				FEEDFACE0000000000000011 /* NFOContentDecoder.swift */,
+				FEEDFACE0000000000000012 /* NFOLayoutPolicy.swift */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -392,9 +400,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DEADBEEF0000000F /* More Perfect DOS VGA.ttf in Resources */,
-				DEADBEEF000000F1 /* FiraCodeNerdFontMono-Retina.ttf in Resources */,
-				DEADBEEF000000F3 /* JetBrainsMono-Regular.ttf in Resources */,
+				FEEDFACE0000000000000005 /* Fonts in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -418,6 +424,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				DEADBEEF0000000C /* PreviewViewController.swift in Sources */,
+				FEEDFACE0000000000000002 /* NFOContentDecoder.swift in Sources */,
+				FEEDFACE0000000000000004 /* NFOLayoutPolicy.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -432,6 +440,8 @@
 				BD2059377C034511826341F0 /* Document.swift in Sources */,
 				3377FBF7CCA0418AAACE77EC /* ViewController.swift in Sources */,
 				D4E5F60718293A4B5CA1B2C3 /* PreferencesViewController.swift in Sources */,
+				FEEDFACE0000000000000001 /* NFOContentDecoder.swift in Sources */,
+				FEEDFACE0000000000000003 /* NFOLayoutPolicy.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -474,6 +484,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 4;
 				INFOPLIST_FILE = QuickLook/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -487,6 +498,7 @@
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.0;
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
+				MARKETING_VERSION = 1.0.3;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/PlugIns";
 				SKIP_INSTALL = YES;
 			};
@@ -498,6 +510,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 4;
 				INFOPLIST_FILE = QuickLook/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -511,6 +524,7 @@
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.0;
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
+				MARKETING_VERSION = 1.0.3;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/PlugIns";
 				SKIP_INSTALL = YES;
 			};
@@ -523,6 +537,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_IDENTITY = "-";
+				CURRENT_PROJECT_VERSION = 4;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_MODEL_TUNING = G5;
@@ -530,7 +545,7 @@
 				INFOPLIST_FILE = Info.plist;
 				CODE_SIGN_ENTITLEMENTS = "The Last NFO Viewer.entitlements";
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.0.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.nle.TheLastNFOViewer;
 				PRODUCT_NAME = "The Last NFO Viewer";
 			};
@@ -543,12 +558,13 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_IDENTITY = "-";
+				CURRENT_PROJECT_VERSION = 4;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				GCC_MODEL_TUNING = G5;
 				INFOPLIST_FILE = Info.plist;
 				CODE_SIGN_ENTITLEMENTS = "The Last NFO Viewer.entitlements";
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.0.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.nle.TheLastNFOViewer;
 				PRODUCT_NAME = "The Last NFO Viewer";
 			};

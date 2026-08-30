@@ -1,61 +1,78 @@
 # Building The Last NFO Viewer
 
-## 1. Project Structure
-The project is organized to keep the root directory clean:
-- **`Sources/`**: All Swift source code (`AppDelegate.swift`, `ViewController.swift`, etc.).
-- **`Resources/`**: Assets including `Assets.xcassets` (App Icon), Fonts, XIBs, and Localization files.
-- **`QuickLook/`**: Source code for the QuickLook plugin.
+The project requires macOS 11 or later and a full Xcode installation.
 
-## 2. How to Build
+## Project structure
 
-### Option A: Using Xcode (Recommended)
+- `Sources/` contains the main app source.
+- `QuickLook/` contains the Finder Quick Look extension.
+- `Resources/` contains assets, fonts, interface files, and localizations.
+- `Tests/` contains focused tests for decoding and layout policy.
+
+## Build with Xcode
+
 1. Open `The Last NFO Viewer.xcodeproj`.
 2. Select the **The Last NFO Viewer** scheme.
-3. Press **Cmd+B** to build or **Cmd+R** to run.
+3. Press **Command-B** to build or **Command-R** to run.
 
-### Option B: Using Terminal
-**Important:** If you see `xcode-select` errors or "Operation not permitted", follow these steps carefully.
+The app scheme embeds the Quick Look extension. When changing extension code or resources, also build the **NFO Preview** scheme directly to verify that target.
 
-1. **Ensure correct Xcode path:**
-   The Command Line Tools (CLT) path often causes build failures. Force the use of the full Xcode app:
-   ```bash
-   export DEVELOPER_DIR="/Applications/Xcode.app/Contents/Developer"
-   ```
+## Build from Terminal
 
-2. **Clean previous builds:**
-   ```bash
-   rm -rf build/
-   ```
+Build products are kept under `build/DerivedData`:
 
-3. **Build the Main App:**
-   ```bash
-   xcodebuild -project "The Last NFO Viewer.xcodeproj" \
-     -scheme "The Last NFO Viewer" \
-     -configuration Release \
-     -derivedDataPath ./build/DerivedData \
-     build
-   ```
+```bash
+DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
+  xcodebuild -project "The Last NFO Viewer.xcodeproj" \
+  -scheme "The Last NFO Viewer" \
+  -configuration Release \
+  -derivedDataPath ./build/DerivedData \
+  build
+```
 
-4. **Build the QuickLook Plugin:**
-   ```bash
-   xcodebuild -project "The Last NFO Viewer.xcodeproj" \
-     -scheme "NFO Preview" \
-     -configuration Release \
-     -derivedDataPath ./build/DerivedData \
-     build
-   ```
+Verify the Quick Look target separately after extension changes:
 
-## 3. Where are the files?
-After a successful terminal build using the commands above, your application will be located here:
-`./build/DerivedData/Build/Products/Release/The Last NFO Viewer.app`
+```bash
+DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
+  xcodebuild -project "The Last NFO Viewer.xcodeproj" \
+  -scheme "NFO Preview" \
+  -configuration Release \
+  -derivedDataPath ./build/DerivedData \
+  build
+```
 
-## 4. Common Troubleshooting
+The resulting app is at:
 
-**Error:** `xcode-select: error: tool 'xcodebuild' requires Xcode, but active developer directory...`
-**Fix:** Run `export DEVELOPER_DIR="/Applications/Xcode.app/Contents/Developer"` before building.
+```text
+build/DerivedData/Build/Products/Release/The Last NFO Viewer.app
+```
 
-**Error:** `Operation not permitted` / `sandbox` errors
-**Fix:** This happens when running inside strict sandboxed environments (like some AI agents or restricted shells). Run the commands in your system's standard **Terminal.app** or **iTerm**.
+## Run tests
 
-**Error:** `CodeSigning` errors
-**Fix:** The project is set to "Sign to Run Locally". If this fails, ensure you have a valid development certificate or open the project in Xcode to let it repair signing automatically.
+```bash
+swift test --scratch-path build/SwiftPM
+```
+
+## Test Quick Look
+
+Finder loads app extensions from a stable installed app more reliably than from DerivedData.
+
+1. Replace **The Last NFO Viewer.app** in `/Applications` with the Release build.
+2. Open the app once.
+3. Select an NFO, ASC, or DIZ file in Finder and press Space.
+
+If Finder still uses an older extension, register the installed copy and refresh the preview services:
+
+```bash
+pluginkit -a "/Applications/The Last NFO Viewer.app/Contents/PlugIns/NFO Preview.appex"
+pluginkit -e use -i com.nle.TheLastNFOViewer.QuickLook
+killall "NFO Preview" 2>/dev/null || true
+killall QuickLookUIService 2>/dev/null || true
+qlmanage -r cache
+```
+
+## Troubleshooting
+
+If `xcodebuild` reports that the active developer directory contains only Command Line Tools, use the `DEVELOPER_DIR` prefix shown above or select Xcode globally with `xcode-select`.
+
+For code-signing failures, open the project in Xcode and confirm that **Sign to Run Locally** is available for both targets.

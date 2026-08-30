@@ -1,100 +1,81 @@
-<img src="Design/exports/nfo-viewer-iOS-Default-1024x1024@1x.png" width="15%" alt="App Icon" /> 
+<img src="Design/exports/nfo-viewer-iOS-Default-1024x1024@1x.png" width="15%" alt="The Last NFO Viewer app icon">
 
 # The Last NFO Viewer
 
-A modern, native macOS application for viewing NFO, ASC, and DIZ files, written in Swift.
-This project has been inspired by [Yet Another NFO Viewer](https://github.com/mackonsti/yet-another-nfo-viewer)
+The Last NFO Viewer is a native macOS app for viewing NFO, ASC, and DIZ files. It is written in Swift and requires macOS 11 or later.
+
+The project was inspired by [Yet Another NFO Viewer](https://github.com/mackonsti/yet-another-nfo-viewer).
 
 ## Features
 
-- **Native macOS Experience**: Rewritten completely in Swift for modern macOS versions and Apple Silicon.
-- **QuickLook Plugin**: Preview NFO files directly in Finder (Spacebar preview) without opening the app (please see [Quicklook Limitations](#quicklook-limitations) for more info).
-- **Hyperlinks**: Automatically detects and highlights URLs in NFO files.
-- **Image Export**: Export or copy the rendered NFO as a high-quality PNG image or vector SVG (`Cmd+Shift+E` / `Cmd+Shift+C`).
-- **Theme Support**: 
-  - **Light/Dark Mode**: Fully supports system appearance or can be forced to specific modes.
-  - **Custom Colors**: Customize text, background, link, and selection colors via Preferences.
-- **Font Collection**: Bundled with high-quality DOS/ASCII fonts:
-  - More Perfect DOS VGA (Default)
-  - ProFontWindows
-  - BlockZone
-  - Fira Code Mono
-  - JetBrains Mono
-  - Extensive collection of Px437 (IBM CGA/EGA/VGA) fonts.
+- Content-aware windows that fit each document independently. Auto-fit and centered alignment are the defaults; manually resizing a window switches it to Static mode.
+- Width and height limits that keep oversized documents within the display and provide scrollbars when needed.
+- Finder Quick Look previews that follow the app's font, font size, colors, appearance, link highlighting, alignment, and content-fit layout.
+- Automatic URL detection and clickable links.
+- PNG and SVG export and copy commands.
+- System, light, and dark appearances with configurable text, background, link, and selection colors.
+- 29 bundled monospaced DOS and ASCII fonts, including More Perfect DOS VGA, ProFontWindows, BlockZone, Fira Code, JetBrains Mono, and Px437 variants.
+
+Use **View > Auto-fit Window to Content** to switch sizing modes without opening Settings. Font size and appearance can also be changed from the View menu.
 
 ## Screenshots
-<img src="Screenshots/app-window.png" width="70%" alt="Main App Window" /> 
-<img src="Screenshots/quicklook.png" width="70%" alt="QuickLook Preview" />
 
-### Configuration
-The QuickLook plugin shares settings with the main application. When you change fonts or colors in the App's **Preferences**, the changes are saved to a shared configuration file (`~/.the-last-nfo-viewer.json`) which the QuickLook plugin reads.
+<img src="Screenshots/app-window.png" width="70%" alt="The Last NFO Viewer window">
+<img src="Screenshots/quicklook.png" width="70%" alt="Quick Look preview">
+
+## Settings and Quick Look
+
+Quick Look reads the presentation settings exported by the main app to `~/.the-last-nfo-viewer.json`. Open the app once before using Quick Look, and keep the app in `/Applications` so macOS can discover its extension reliably. Setting changes are sent to active previews automatically.
+
+If a preview does not appear or still shows an older build:
+
+1. Replace the copy of **The Last NFO Viewer.app** in `/Applications` with the new build.
+2. Open the app once.
+3. Run these commands in Terminal:
+
+   ```bash
+   pluginkit -a "/Applications/The Last NFO Viewer.app/Contents/PlugIns/NFO Preview.appex"
+   pluginkit -e use -i com.nle.TheLastNFOViewer.QuickLook
+   killall "NFO Preview" 2>/dev/null || true
+   killall QuickLookUIService 2>/dev/null || true
+   qlmanage -r cache
+   ```
+
+Builds left in Xcode's DerivedData directory are not reliable installation locations for Finder extensions.
 
 ## Installation
 
-### Via Homebrew
+### Homebrew
 
 ```bash
 brew install NoLooseEnds/tap/the-last-nfo-viewer
 ```
 
-Or tap the repository first:
+Alternatively, add the tap first:
 
 ```bash
 brew tap NoLooseEnds/tap
 brew install the-last-nfo-viewer
 ```
 
-### From Source
-Please refer to [BUILD.md](BUILD.md) for detailed build instructions.
+### Source
 
-Summary:
-1.  Open `The Last NFO Viewer.xcodeproj` in Xcode.
-2.  Build the **The Last NFO Viewer** scheme.
-3.  Build the **NFO Preview** scheme (for QuickLook).
+See [BUILD.md](BUILD.md) for Xcode, command-line, test, and Quick Look setup instructions.
 
-## Running the App
-Since this app is self-signed (ad-hoc), macOS Gatekeeper might prevent it from opening.
+## Opening an unsigned build
 
-1.  **Right-click** the app and select **Open**.
-2.  Click **Open** in the confirmation dialog.
+The app is ad-hoc signed, so Gatekeeper may block it the first time it opens. Right-click the app, choose **Open**, then confirm. You can also allow it from **System Settings > Privacy & Security**.
 
-Alternatively, you can go to **System Settings > Privacy & Security** and click **Open Anyway** next to the message about the app being blocked.
+If macOS reports that a downloaded copy in `/Applications` is damaged, remove its quarantine metadata:
 
-If you move the app to `/Applications` and still face issues (e.g. "App is damaged"), remove the quarantine attribute:
 ```bash
-xattr -cr /Applications/The\ Last\ NFO\ Viewer.app
+xattr -cr "/Applications/The Last NFO Viewer.app"
 ```
 
-### QuickLook Limitations
-If you installed via Homebrew or downloaded the zip, the QuickLook plugin might show a blank window or fail to load due to macOS strict security requirements for App Extensions in ad-hoc signed apps.
-
-To fix this, you can try:
-1. Moving the app to `/Applications`.
-2. Running: `xattr -cr /Applications/The\ Last\ NFO\ Viewer.app`
-3. Reloading QuickLook: `qlmanage -r`
-
-If it still doesn't work, compiling the app from source using Xcode will guarantee the QuickLook plugin works on your machine.
-
-
 ## History
-Original project "NFO Viewer" by [Kris Gybels](https://blockart.sourceforge.net/index.html)  
-Then a rewrite to "Yet Another NFO Viewer" by [MacKonsti](https://github.com/mackonsti/yet-another-nfo-viewer)  
-And now another complete rewrite, reaching its final form as `The Last NFO Viewer`.
 
-
-## Troubleshooting
-If the QuickLook preview doesn't appear or doesn't update after changing settings:
-
-1.  **Reload QuickLook Cache**: Run the following command in Terminal:
-    ```bash
-    qlmanage -r
-    ```
-2.  **Verify Permissions**: The plugin is sandboxed. If it fails to read your settings, ensure you have run the main application at least once.
-
+The original NFO Viewer was created by [Kris Gybels](https://blockart.sourceforge.net/index.html), followed by MacKonsti's [Yet Another NFO Viewer](https://github.com/mackonsti/yet-another-nfo-viewer), and this native Swift rewrite.
 
 ## License
-See [LICENSE](LICENSE) file.
 
-
-## Note
-_Note that this is my first public app-project on GitHub. Be nice. :)_
+See [LICENSE](LICENSE).

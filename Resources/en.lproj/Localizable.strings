@@ -1,12 +1,22 @@
 /* Localizable.strings */
 
 /* Message Dialog */
+"EXPORT_FAILED_TITLE" = "Export Failed";
+"EXPORT_FAILED_MESSAGE" = "The file could not be saved. %@";
+"EXPORT_CONTENT_ERROR" = "The image data could not be created.";
 
 /* Menu */
 "MENU_SETTINGS" = "Settings…";
 "MENU_PREFERENCES" = "Preferences…";
 "MENU_VIEW" = "View";
 "MENU_TOGGLE_DARK_MODE" = "Toggle Dark Mode";
+"MENU_AUTO_FIT_WINDOW" = "Auto-fit Window to Content";
+"MENU_INCREASE_FONT" = "Increase Font Size";
+"MENU_DECREASE_FONT" = "Decrease Font Size";
+"MENU_RESET_FONT" = "Default Font Size";
+"MENU_EXPORT" = "Export…";
+"MENU_COPY_AS_PNG" = "Copy as PNG";
+"MENU_COPY_AS_SVG" = "Copy as SVG";
 
 /* Window Titles */
 "WINDOW_PREFERENCES" = "Preferences";
@@ -14,7 +24,9 @@
 /* Preferences UI */
 "PREF_LABEL_FONT" = "Font:";
 "PREF_LABEL_APPEARANCE" = "Appearance:";
+"PREF_LABEL_WINDOW_SIZE" = "Window size:";
 "PREF_LABEL_ALIGNMENT" = "Alignment:";
+"PREF_LABEL_COPY_FORMAT" = "Copy As:";
 "PREF_LABEL_FONT_SIZE" = "Font size:";
 "PREF_CHECK_SMOOTHING" = "Font smoothing";
 "PREF_LABEL_TEXT_COLOR" = "Text color:";
@@ -27,7 +39,14 @@
 "APPEARANCE_SYSTEM" = "System";
 "APPEARANCE_LIGHT" = "Light";
 "APPEARANCE_DARK" = "Dark";
+"WINDOW_SIZE_STATIC" = "Static";
+"WINDOW_SIZE_AUTO" = "Auto-fit to content";
 "ALIGN_LEFT" = "Left";
 "ALIGN_CENTER" = "Center";
 "ALIGN_RIGHT" = "Right";
 "MENU_SYSTEM_FONTS" = "System Fonts (Fixed Width)";
+
+/* Export and copy feedback */
+"EXPORT_FORMAT_LABEL" = "Format:";
+"COPY_AS_PNG_CONFIRMATION" = "Copied as PNG";
+"COPY_AS_SVG_CONFIRMATION" = "Copied as SVG";

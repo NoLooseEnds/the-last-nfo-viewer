@@ -1,12 +1,22 @@
 /* Localizable.strings */
 
 /* Message Dialog */
+"EXPORT_FAILED_TITLE" = "Échec de l'exportation";
+"EXPORT_FAILED_MESSAGE" = "Impossible d'enregistrer le fichier. %@";
+"EXPORT_CONTENT_ERROR" = "Impossible de créer les données de l'image.";
 
 /* Menu */
 "MENU_SETTINGS" = "Réglages…";
 "MENU_PREFERENCES" = "Préférences…";
 "MENU_VIEW" = "Présentation";
 "MENU_TOGGLE_DARK_MODE" = "Basculer le mode sombre";
+"MENU_AUTO_FIT_WINDOW" = "Ajuster la fenêtre au contenu";
+"MENU_INCREASE_FONT" = "Augmenter la taille de police";
+"MENU_DECREASE_FONT" = "Réduire la taille de police";
+"MENU_RESET_FONT" = "Taille de police par défaut";
+"MENU_EXPORT" = "Exporter…";
+"MENU_COPY_AS_PNG" = "Copier au format PNG";
+"MENU_COPY_AS_SVG" = "Copier au format SVG";
 
 /* Window Titles */
 "WINDOW_PREFERENCES" = "Préférences";
@@ -14,7 +24,9 @@
 /* Preferences UI */
 "PREF_LABEL_FONT" = "Police :";
 "PREF_LABEL_APPEARANCE" = "Apparence :";
+"PREF_LABEL_WINDOW_SIZE" = "Taille de fenêtre :";
 "PREF_LABEL_ALIGNMENT" = "Alignement :";
+"PREF_LABEL_COPY_FORMAT" = "Copier comme :";
 "PREF_LABEL_FONT_SIZE" = "Taille :";
 "PREF_CHECK_SMOOTHING" = "Lissage de police";
 "PREF_LABEL_TEXT_COLOR" = "Couleur du texte :";
@@ -27,7 +39,14 @@
 "APPEARANCE_SYSTEM" = "Système";
 "APPEARANCE_LIGHT" = "Clair";
 "APPEARANCE_DARK" = "Sombre";
+"WINDOW_SIZE_STATIC" = "Fixe";
+"WINDOW_SIZE_AUTO" = "Ajuster au contenu";
 "ALIGN_LEFT" = "Gauche";
 "ALIGN_CENTER" = "Centré";
 "ALIGN_RIGHT" = "Droite";
 "MENU_SYSTEM_FONTS" = "Polices système (chasse fixe)";
+
+/* Export and copy feedback */
+"EXPORT_FORMAT_LABEL" = "Format :";
+"COPY_AS_PNG_CONFIRMATION" = "Copié au format PNG";
+"COPY_AS_SVG_CONFIRMATION" = "Copié au format SVG";

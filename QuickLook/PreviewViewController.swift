@@ -2,8 +2,16 @@ import Cocoa
 import Quartz
 
 class PreviewViewController: NSViewController, QLPreviewingController {
+    private static let distributedPreferencesChanged = Notification.Name(
+        "com.nle.TheLastNFOViewer.preferencesChanged"
+    )
+    private static let linkDetector: NSDataDetector? = {
+        try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
+    }()
     
     private var textView: NSTextView!
+    private var contentWidth: CGFloat = 0
+    private var contentHeight: CGFloat = 0
     
     private var sharedConfig: [String: Any] = [:]
     
@@ -13,20 +21,23 @@ class PreviewViewController: NSViewController, QLPreviewingController {
         let scrollView = NSScrollView()
         scrollView.borderType = .noBorder
         scrollView.hasVerticalScroller = true
+        scrollView.hasHorizontalScroller = true
         scrollView.autohidesScrollers = true
         
         let contentSize = NSSize(width: 800, height: 600)
         scrollView.frame = NSRect(origin: .zero, size: contentSize)
         
-        textView = NSTextView()
-        textView.minSize = NSSize(width: 0, height: contentSize.height)
+        textView = NSTextView(frame: NSRect(origin: .zero, size: contentSize))
+        textView.minSize = .zero
         textView.maxSize = NSSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
         textView.isVerticallyResizable = true
-        textView.isHorizontallyResizable = false
+        textView.isHorizontallyResizable = true
         textView.autoresizingMask = [.width]
         
-        textView.textContainer?.containerSize = NSSize(width: contentSize.width, height: CGFloat.greatestFiniteMagnitude)
-        textView.textContainer?.widthTracksTextView = true
+        textView.textContainer?.containerSize = NSSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
+        textView.textContainer?.widthTracksTextView = false
+        textView.textContainer?.lineFragmentPadding = 0
+        textView.textContainer?.lineBreakMode = .byClipping
         
         textView.isEditable = false
         textView.isSelectable = true
@@ -34,11 +45,25 @@ class PreviewViewController: NSViewController, QLPreviewingController {
         scrollView.documentView = textView
         self.view = scrollView
         
-        // Setup theme support
         updateAppearance()
         
-        // Observe theme changes
-        DistributedNotificationCenter.default.addObserver(self, selector: #selector(themeChanged), name: NSNotification.Name("AppleInterfaceThemeChangedNotification"), object: nil)
+        DistributedNotificationCenter.default.addObserver(
+            self,
+            selector: #selector(themeChanged),
+            name: NSNotification.Name("AppleInterfaceThemeChangedNotification"),
+            object: nil
+        )
+        DistributedNotificationCenter.default.addObserver(
+            self,
+            selector: #selector(sharedPreferencesChanged),
+            name: Self.distributedPreferencesChanged,
+            object: nil
+        )
+    }
+
+    override func viewDidLayout() {
+        super.viewDidLayout()
+        alignContent()
     }
     
     deinit {
@@ -46,7 +71,15 @@ class PreviewViewController: NSViewController, QLPreviewingController {
     }
     
     @objc private func themeChanged() {
-        updateAppearance()
+        updateText(textView.string)
+    }
+
+    @objc private func sharedPreferencesChanged() {
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            self.loadSharedConfig()
+            self.updateText(self.textView.string)
+        }
     }
     
     private func updateAppearance() {
@@ -62,28 +95,35 @@ class PreviewViewController: NSViewController, QLPreviewingController {
             isEffectiveDark = appearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
         }
         
-        // Colors
-        if let textHex = sharedConfig["textColor"] as? String,
-           let bgHex = sharedConfig["backgroundColor"] as? String {
-            textView.textColor = color(from: textHex)
-            textView.backgroundColor = color(from: bgHex)
-        } else {
-            if isEffectiveDark {
-                textView.backgroundColor = .black
-                textView.textColor = .white
-            } else {
-                textView.backgroundColor = .white
-                textView.textColor = .black
-            }
-        }
-        
-        if let linkHex = sharedConfig["linkColor"] as? String {
-             textView.linkTextAttributes = [.foregroundColor: color(from: linkHex), .cursor: NSCursor.pointingHand]
-        }
-        
-        if let selHex = sharedConfig["selectionColor"] as? String {
-            textView.selectedTextAttributes = [.backgroundColor: color(from: selHex)]
-        }
+        let textColor = resolvedColor(
+            configKey: "textColor",
+            customFlagKey: "hasCustomTextColor",
+            fallback: isEffectiveDark ? .white : .black
+        )
+        let backgroundColor = resolvedColor(
+            configKey: "backgroundColor",
+            customFlagKey: "hasCustomBackgroundColor",
+            fallback: isEffectiveDark ? .black : .white
+        )
+        let linkColor = resolvedColor(
+            configKey: "linkColor",
+            customFlagKey: "hasCustomLinkColor",
+            fallback: .blue
+        )
+        let selectionColor = resolvedColor(
+            configKey: "selectionColor",
+            customFlagKey: "hasCustomSelectionColor",
+            fallback: .selectedTextBackgroundColor
+        )
+
+        textView.textColor = textColor
+        textView.backgroundColor = backgroundColor
+        textView.linkTextAttributes = [
+            .foregroundColor: linkColor,
+            .underlineStyle: NSUnderlineStyle.single.rawValue,
+            .cursor: NSCursor.pointingHand
+        ]
+        textView.selectedTextAttributes = [.backgroundColor: selectionColor]
     }
     
     private func color(from hex: String) -> NSColor {
@@ -107,9 +147,22 @@ class PreviewViewController: NSViewController, QLPreviewingController {
             alpha: CGFloat(1.0)
         )
     }
+
+    private func resolvedColor(
+        configKey: String,
+        customFlagKey: String,
+        fallback: NSColor
+    ) -> NSColor {
+        if sharedConfig[customFlagKey] as? Bool == false {
+            return fallback
+        }
+        if let hex = sharedConfig[configKey] as? String {
+            return color(from: hex)
+        }
+        return fallback
+    }
     
     func preparePreviewOfFile(at url: URL, completionHandler handler: @escaping (Error?) -> Void) {
-        // Try to register custom font
         registerFont()
         
         do {
@@ -117,40 +170,27 @@ class PreviewViewController: NSViewController, QLPreviewingController {
             defer { if startAccess { url.stopAccessingSecurityScopedResource() } }
             
             let data = try Data(contentsOf: url)
-            
-            // CP437 Decoding
-            let cfEncoding = CFStringConvertWindowsCodepageToEncoding(437)
-            let nsEncoding = CFStringConvertEncodingToNSStringEncoding(cfEncoding)
-            let encoding = String.Encoding(rawValue: nsEncoding)
-            
-            var content = String(data: data, encoding: encoding) ?? String(data: data, encoding: .ascii) ?? "Error decoding file content."
-            
-            // Remove trailing CR/LF
-             if content.hasSuffix("\n") {
-                 content = String(content.dropLast())
-                 if content.hasSuffix("\r") {
-                     content = String(content.dropLast())
-                 }
-             }
+            let content = try NFOContentDecoder.decode(data)
 
             DispatchQueue.main.async {
                 self.updateText(content)
                 handler(nil)
             }
         } catch {
-            let errorMsg = "Failed to read file: \(error.localizedDescription)"
-            DispatchQueue.main.async {
-                self.updateText(errorMsg)
-                handler(nil)
-            }
+            handler(error)
         }
     }
     
     private func registerFont() {
-        // Register all fonts found in the bundle to ensure the selected one is available
         let bundle = Bundle(for: type(of: self))
-        if let urls = bundle.urls(forResourcesWithExtension: "ttf", subdirectory: nil) {
-            CTFontManagerRegisterFontsForURLs(urls as CFArray, .process, nil)
+        var urls = bundle.urls(forResourcesWithExtension: "ttf", subdirectory: nil) ?? []
+        urls.append(contentsOf: bundle.urls(
+            forResourcesWithExtension: "ttf",
+            subdirectory: "Fonts"
+        ) ?? [])
+
+        if !urls.isEmpty {
+            CTFontManagerRegisterFontURLs(urls as CFArray, .process, true, nil)
         }
     }
     
@@ -176,22 +216,119 @@ class PreviewViewController: NSViewController, QLPreviewingController {
     }
     
     private func updateText(_ content: String) {
-        let fontSize = (sharedConfig["fontSize"] as? Double) ?? 14.0
+        let configuredFontSize = (sharedConfig["fontSize"] as? Double) ?? 14.0
+        let fontSize = configuredFontSize.isFinite && configuredFontSize > 0
+            ? min(max(configuredFontSize, 8.0), 72.0)
+            : 14.0
         let fontName = (sharedConfig["fontName"] as? String) ?? "More Perfect DOS VGA"
         
-        // Try custom font first, fallback to user fixed pitch, then system mono
-        let font = NSFont(name: fontName, size: fontSize) 
-            ?? NSFont.userFixedPitchFont(ofSize: fontSize) 
+        let font = NSFont(name: fontName, size: fontSize)
             ?? NSFont.monospacedSystemFont(ofSize: fontSize, weight: .regular)
-        
-        textView.font = font
-        textView.string = content
-        
-        if let highlight = sharedConfig["highlightLinks"] as? Bool, highlight {
-            textView.checkTextInDocument(nil)
+
+        let textColor = resolvedTextColor()
+        let attributedString = NSMutableAttributedString(
+            string: content,
+            attributes: [.font: font, .foregroundColor: textColor]
+        )
+        if sharedConfig["highlightLinks"] as? Bool == true,
+           let detector = Self.linkDetector {
+            let fullRange = NSRange(location: 0, length: content.utf16.count)
+            let linkColor = resolvedLinkColor()
+            for match in detector.matches(in: content, options: [], range: fullRange) {
+                if let url = match.url {
+                    attributedString.addAttributes([
+                        .link: url,
+                        .foregroundColor: linkColor,
+                        .underlineStyle: NSUnderlineStyle.single.rawValue
+                    ], range: match.range)
+                }
+            }
         }
-        
-        // Ensure colors are correct after setting string (sometimes resets attributes)
+        textView.textStorage?.setAttributedString(attributedString)
+
+        let measuredSize = attributedString.size()
+        contentWidth = measuredSize.width
+        contentHeight = measuredSize.height
+        updatePreferredContentSize()
+        alignContent()
         updateAppearance()
+    }
+
+    private func resolvedTextColor() -> NSColor {
+        let mode = (sharedConfig["appearanceMode"] as? String) ?? "System"
+        let isDark: Bool
+        switch mode {
+        case "Dark": isDark = true
+        case "Light": isDark = false
+        default:
+            isDark = NSApp.effectiveAppearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
+        }
+        return resolvedColor(
+            configKey: "textColor",
+            customFlagKey: "hasCustomTextColor",
+            fallback: isDark ? .white : .black
+        )
+    }
+
+    private func resolvedLinkColor() -> NSColor {
+        resolvedColor(
+            configKey: "linkColor",
+            customFlagKey: "hasCustomLinkColor",
+            fallback: .blue
+        )
+    }
+
+    private func alignContent() {
+        guard let scrollView = view as? NSScrollView,
+              let textContainer = textView.textContainer else { return }
+
+        let alignment: NFOTextAlignment
+        switch (sharedConfig["textAlignment"] as? String) ?? "Center" {
+        case "Left": alignment = .left
+        case "Right": alignment = .right
+        default: alignment = .center
+        }
+        let layout = NFOLayoutPolicy.contentLayout(
+            contentWidth: contentWidth,
+            availableWidth: scrollView.contentSize.width,
+            alignment: alignment
+        )
+
+        textView.isHorizontallyResizable = layout.scrollsHorizontally
+        textView.autoresizingMask = layout.scrollsHorizontally ? [] : [.width]
+        textContainer.widthTracksTextView = layout.widthTracksTextView
+        textView.textContainerInset = NSSize(
+            width: layout.horizontalInset,
+            height: 0
+        )
+
+        if let containerWidth = layout.textContainerWidth,
+           !layout.widthTracksTextView {
+            textContainer.containerSize = NSSize(
+                width: containerWidth,
+                height: CGFloat.greatestFiniteMagnitude
+            )
+        }
+        let targetHeight = max(
+            scrollView.contentSize.height,
+            ceil(contentHeight)
+        )
+        let targetSize = NSSize(width: layout.textViewWidth, height: targetHeight)
+        if textView.frame.size != targetSize {
+            textView.setFrameSize(targetSize)
+        }
+    }
+
+    private func updatePreferredContentSize() {
+        guard let screen = view.window?.screen ?? NSScreen.main else { return }
+
+        let idealSize = NSSize(
+            width: contentWidth + NFOLayoutPolicy.horizontalWindowPadding,
+            height: contentHeight + NFOLayoutPolicy.verticalWindowPadding
+        )
+        preferredContentSize = NFOLayoutPolicy.autoFitSize(
+            idealSize: idealSize,
+            visibleSize: screen.visibleFrame.size
+        )
     }
 }
